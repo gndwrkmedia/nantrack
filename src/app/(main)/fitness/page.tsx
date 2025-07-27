@@ -1,7 +1,7 @@
 
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -10,14 +10,42 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, Lightbulb } from 'lucide-react';
 import { placeholderExercises } from '@/lib/placeholder-data';
 import type { ActivityLog } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function FitnessPage() {
     const { toast } = useToast();
     const [activityLog, setActivityLog] = React.useState<ActivityLog[]>([]);
+    const [tip, setTip] = useState('');
+    const [isTipLoading, setIsTipLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchTip = async () => {
+          setIsTipLoading(true);
+          try {
+            const response = await fetch('/api/generate-tip', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ context: 'User is viewing the fitness page, which includes low-impact exercises like chair squats. Provide a tip about the benefits of gentle exercise.' }),
+            });
+             if (!response.ok) {
+                throw new Error('API call failed with status: ' + response.status);
+             }
+            const data = await response.json();
+            setTip(data.tip);
+          } catch (error) {
+             console.error("Failed to fetch tip:", error);
+             setTip("Could not load a tip right now. Remember, consistency is key!");
+          } finally {
+            setIsTipLoading(false);
+          }
+        };
+
+        fetchTip();
+    }, []);
 
     const handleLogActivity = (exerciseName: string) => {
         // This is a simplified log entry. In a real app, a form in the dialog would provide the values.
@@ -128,6 +156,24 @@ export default function FitnessPage() {
                     ))}
                 </TableBody>
               </Table>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-3 text-2xl">
+                    <Lightbulb className="h-8 w-8 text-primary"/>
+                    <span>Personalized Tip</span>
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                {isTipLoading ? (
+                    <div className="space-y-2">
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-3/4" />
+                    </div>
+                ) : (
+                    <p className="text-lg text-muted-foreground">{tip}</p>
+                )}
             </CardContent>
           </Card>
         </div>
