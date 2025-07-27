@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -32,11 +33,11 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <SidebarProvider>
-      <Sidebar>
+      <Sidebar variant="floating" collapsible="icon">
         <SidebarHeader className="p-4">
           <Link href="/" className="flex items-center gap-3">
             <Logo className="w-10 h-10" />
-            <span className="font-headline text-2xl font-bold text-foreground/90">
+            <span className="font-headline text-2xl font-bold text-foreground/90 group-data-[collapsible=icon]:hidden">
               Golden Health
             </span>
           </Link>
@@ -61,7 +62,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         </SidebarContent>
       </Sidebar>
       <SidebarInset>
-        <main className="min-h-screen p-4 sm:p-6 lg:p-8 bg-background">
+        <main className="min-h-screen p-4 sm:p-6 lg:p-8">
           {children}
         </main>
       </SidebarInset>
