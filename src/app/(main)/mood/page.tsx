@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -12,8 +12,6 @@ import { placeholderMoodLog } from '@/lib/placeholder-data';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import type { MoodLog } from '@/lib/types';
-import { Lightbulb } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
 
 const moodOptions = [
   { level: 1, emoji: '😞', label: 'Very Sad' },
@@ -28,32 +26,6 @@ export default function MoodPage() {
   const [moodLog, setMoodLog] = useState<MoodLog[]>(placeholderMoodLog);
   const [selectedMood, setSelectedMood] = React.useState<number | null>(4);
   const [journalEntry, setJournalEntry] = React.useState('');
-  const [tip, setTip] = useState('');
-  const [isTipLoading, setIsTipLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchTip = async () => {
-      setIsTipLoading(true);
-      try {
-        const response = await fetch('/api/generate-tip', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ context: 'User is on the mood tracking page. Their last logged mood was "Good". Provide a tip about the connection between mood and physical health.' }),
-        });
-        if (!response.ok) {
-          throw new Error('API call failed with status: ' + response.status);
-        }
-        const data = await response.json();
-        setTip(data.tip);
-      } catch (error) {
-        console.error("Failed to fetch tip:", error);
-        setTip("Could not load a tip right now. Taking a few deep breaths can be a great way to center yourself.");
-      } finally {
-        setIsTipLoading(false);
-      }
-    };
-    fetchTip();
-  }, []);
 
   const handleSave = () => {
     if (!selectedMood) {
@@ -172,24 +144,6 @@ export default function MoodPage() {
                   ))}
                 </TableBody>
               </Table>
-            </CardContent>
-          </Card>
-           <Card>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-3 text-2xl">
-                    <Lightbulb className="h-8 w-8 text-primary"/>
-                    <span>Personalized Tip</span>
-                </CardTitle>
-            </CardHeader>
-            <CardContent>
-                {isTipLoading ? (
-                    <div className="space-y-2">
-                        <Skeleton className="h-4 w-full" />
-                        <Skeleton className="h-4 w-3/4" />
-                    </div>
-                ) : (
-                    <p className="text-lg text-muted-foreground">{tip}</p>
-                )}
             </CardContent>
           </Card>
         </div>

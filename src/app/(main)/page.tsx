@@ -12,12 +12,10 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/page-header';
-import { HeartPulse, Droplets, Pill, Smile, Bike, UtensilsCrossed, Lightbulb, LayoutDashboard } from 'lucide-react';
+import { HeartPulse, Droplets, Pill, Smile, Bike, UtensilsCrossed, LayoutDashboard } from 'lucide-react';
 import { bpDataForChart, bsDataForChart } from '@/lib/placeholder-data';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from '@/components/ui/chart';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Skeleton } from '@/components/ui/skeleton';
-
 
 const mobileNavItems = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -49,8 +47,6 @@ const bsChartConfig = {
 
 export default function DashboardPage() {
   const [greeting, setGreeting] = useState('');
-  const [tip, setTip] = useState('');
-  const [isTipLoading, setIsTipLoading] = useState(true);
 
   useEffect(() => {
     const getGreeting = () => {
@@ -60,29 +56,6 @@ export default function DashboardPage() {
         return "Good Evening";
     };
     setGreeting(getGreeting());
-    
-    const fetchTip = async () => {
-      setIsTipLoading(true);
-      try {
-        const response = await fetch('/api/generate-tip', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ context: 'User is viewing their main dashboard. Give them a general, encouraging health tip for the day.' }),
-        });
-        if (!response.ok) {
-          throw new Error('API call failed with status: ' + response.status);
-        }
-        const data = await response.json();
-        setTip(data.tip);
-      } catch (error) {
-        console.error("Failed to fetch tip:", error);
-        setTip("Could not load a tip right now. Have a wonderful day!");
-      } finally {
-        setIsTipLoading(false);
-      }
-    };
-
-    fetchTip();
   }, []);
   
   return (
@@ -104,25 +77,6 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card className="lg:col-span-3">
-            <CardHeader>
-                <CardTitle className="flex items-center gap-3 text-2xl">
-                    <Lightbulb className="h-8 w-8 text-primary"/>
-                    <span>Tip for Today</span>
-                </CardTitle>
-            </CardHeader>
-            <CardContent>
-                {isTipLoading ? (
-                    <div className="space-y-2">
-                        <Skeleton className="h-4 w-full" />
-                        <Skeleton className="h-4 w-3/4" />
-                    </div>
-                ) : (
-                    <p className="text-lg text-muted-foreground">{tip}</p>
-                )}
-            </CardContent>
-        </Card>
-
         <Card className="lg:col-span-2">
             <CardHeader>
               <CardTitle className="flex items-center gap-3 text-2xl">

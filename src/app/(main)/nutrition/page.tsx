@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -9,39 +9,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { placeholderRecipes } from '@/lib/placeholder-data';
 import type { Recipe } from '@/lib/types';
-import { Minus, Plus, GlassWater, Lightbulb } from 'lucide-react';
+import { Minus, Plus, GlassWater } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { Skeleton } from '@/components/ui/skeleton';
 
 export default function NutritionPage() {
   const { toast } = useToast();
   const [waterCount, setWaterCount] = React.useState(3);
-  const [tip, setTip] = useState('');
-  const [isTipLoading, setIsTipLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchTip = async () => {
-      setIsTipLoading(true);
-      try {
-        const response = await fetch('/api/generate-tip', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ context: 'User is on the nutrition page which features diabetes-friendly recipes. Provide a tip about meal planning.' }),
-        });
-        if (!response.ok) {
-          throw new Error('API call failed with status: ' + response.status);
-        }
-        const data = await response.json();
-        setTip(data.tip);
-      } catch (error) {
-        console.error("Failed to fetch tip:", error);
-        setTip("Could not load a tip right now. Exploring new, healthy recipes can be a fun adventure!");
-      } finally {
-        setIsTipLoading(false);
-      }
-    };
-    fetchTip();
-  }, []);
 
   const handleLogMeal = (mealName: string) => {
     toast({
@@ -114,8 +87,8 @@ export default function NutritionPage() {
         description="Discover diabetes-friendly recipes and track your hydration."
       />
 
-        <div className="grid gap-6 mb-6 lg:grid-cols-5">
-            <Card className="lg:col-span-3">
+        <div className="grid gap-6 mb-6">
+            <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-3 text-2xl">
                         <GlassWater className="h-8 w-8 text-primary"/>
@@ -131,24 +104,6 @@ export default function NutritionPage() {
                      <Button size="icon" variant="outline" className="h-14 w-14 rounded-full" onClick={() => setWaterCount(p => p+1)}>
                         <Plus className="h-8 w-8"/>
                     </Button>
-                </CardContent>
-            </Card>
-             <Card className="lg:col-span-2">
-                <CardHeader>
-                    <CardTitle className="flex items-center gap-3 text-2xl">
-                        <Lightbulb className="h-8 w-8 text-primary"/>
-                        <span>Personalized Tip</span>
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    {isTipLoading ? (
-                        <div className="space-y-2">
-                            <Skeleton className="h-4 w-full" />
-                            <Skeleton className="h-4 w-3/4" />
-                        </div>
-                    ) : (
-                        <p className="text-lg text-muted-foreground">{tip}</p>
-                    )}
                 </CardContent>
             </Card>
         </div>

@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -16,9 +16,6 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from '
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { placeholderBsLog, bsDataForChart } from '@/lib/placeholder-data';
 import { useToast } from '@/hooks/use-toast';
-import { Lightbulb } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
-
 
 const bsFormSchema = z.object({
   level: z.coerce.number().min(20, "Value must be at least 20").max(600, "Value must be less than 600"),
@@ -36,33 +33,6 @@ const chartConfig = {
 
 export default function BloodSugarPage() {
   const { toast } = useToast();
-  const [tip, setTip] = useState('');
-  const [isTipLoading, setIsTipLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchTip = async () => {
-      setIsTipLoading(true);
-      try {
-        const response = await fetch('/api/generate-tip', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ context: 'User is viewing their blood sugar log. Their last fasting level was 98 mg/dL. Provide a tip about diet.' }),
-        });
-        if (!response.ok) {
-          throw new Error('API call failed with status: ' + response.status);
-        }
-        const data = await response.json();
-        setTip(data.tip);
-      } catch (error) {
-        console.error("Failed to fetch tip:", error);
-        setTip("Could not load a tip right now. Remember to stay hydrated!");
-      } finally {
-        setIsTipLoading(false);
-      }
-    };
-
-    fetchTip();
-  }, []);
 
   const form = useForm<BsFormValues>({
     resolver: zodResolver(bsFormSchema),
@@ -136,24 +106,6 @@ export default function BloodSugarPage() {
                   <Button type="submit" size="lg" className="w-full text-lg h-12">Save Reading</Button>
                 </form>
               </Form>
-            </CardContent>
-          </Card>
-           <Card>
-            <CardHeader>
-                <CardTitle className="flex items-center gap-3 text-2xl">
-                    <Lightbulb className="h-8 w-8 text-primary"/>
-                    <span>Personalized Tip</span>
-                </CardTitle>
-            </CardHeader>
-            <CardContent>
-                {isTipLoading ? (
-                    <div className="space-y-2">
-                        <Skeleton className="h-4 w-full" />
-                        <Skeleton className="h-4 w-3/4" />
-                    </div>
-                ) : (
-                    <p className="text-lg text-muted-foreground">{tip}</p>
-                )}
             </CardContent>
           </Card>
         </div>
