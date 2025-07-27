@@ -44,8 +44,8 @@ export default function RegisterPage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: 'Nan-Nan',
-      email: 'nan.nan@email.com',
+      name: '',
+      email: '',
       password: '',
     },
   });
@@ -90,7 +90,7 @@ export default function RegisterPage() {
                     <FormControl>
                       <Input
                         className="h-12 text-base"
-                        placeholder="e.g., Nan-Nan"
+                        placeholder="e.g., Jane Doe"
                         {...field}
                       />
                     </FormControl>
@@ -107,7 +107,7 @@ export default function RegisterPage() {
                     <FormControl>
                       <Input
                         className="h-12 text-base"
-                        placeholder="nan.nan@email.com"
+                        placeholder="you@email.com"
                         {...field}
                       />
                     </FormControl>
