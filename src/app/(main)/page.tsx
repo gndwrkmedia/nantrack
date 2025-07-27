@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   Card,
@@ -11,8 +11,11 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/page-header';
-import { HeartPulse, Droplets, Pill, Smile, Lightbulb, GlassWater, Bike, UtensilsCrossed } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { HeartPulse, Droplets, Pill, Smile, Lightbulb, Bike, UtensilsCrossed } from 'lucide-react';
+import { generateDailySummaryTip } from '@/ai/flows/generate-daily-summary-tip-flow';
+import { placeholderBpLog, placeholderBsLog, placeholderMoodLog } from '@/lib/placeholder-data';
+import type { ActivityLog } from '@/lib/types';
+
 
 const mobileNavItems = [
   { href: '/blood-pressure', label: 'BP', icon: HeartPulse },
@@ -24,8 +27,9 @@ const mobileNavItems = [
 ]
 
 export default function DashboardPage() {
-  const [date, setDate] = React.useState<Date | undefined>(new Date());
-  
+  const [dailyTip, setDailyTip] = useState('');
+  const [tipLoading, setTipLoading] = useState(true);
+
   // A friendly greeting based on the time of day
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -33,6 +37,60 @@ export default function DashboardPage() {
     if (hour < 18) return "Good Afternoon";
     return "Good Evening";
   };
+
+  useEffect(() => {
+    const fetchTip = async () => {
+      setTipLoading(true);
+      try {
+        const bpData = placeholderBpLog.map(d => ({
+            systolic: d.systolic, 
+            diastolic: d.diastolic, 
+            timestamp: d.timestamp.toISOString()
+        }));
+
+        const bsData = placeholderBsLog.map(d => ({
+            level: d.level, 
+            timestamp: d.timestamp.toISOString()
+        }));
+        
+        const moodData = placeholderMoodLog.map(log => ({...log, timestamp: log.timestamp.toISOString()}));
+
+        // In a real app, this would be fetched from a database
+        const activityLog: ActivityLog[] = []; 
+        const waterCount = 3;
+
+        const response = await generateDailySummaryTip({
+          bloodPressure: {
+            currentReading: bpData[0],
+            historicalData: bpData,
+          },
+          bloodSugar: {
+            currentReading: bsData[0],
+            historicalData: bsData,
+          },
+          fitness: {
+            activityLog: activityLog.map(log => ({...log, timestamp: log.timestamp.toISOString()}))
+          },
+          nutrition: {
+            waterCount: waterCount,
+          },
+          mood: {
+            moodLog: moodData,
+          }
+        });
+
+        if (response.tip) {
+          setDailyTip(response.tip);
+        }
+      } catch (error) {
+        console.error("Error generating daily tip:", error);
+        setDailyTip("Have a wonderful day! Remember to stay hydrated and take your medications as scheduled.");
+      } finally {
+        setTipLoading(false);
+      }
+    };
+    fetchTip();
+  }, []);
   
   return (
     <div className="w-full">
@@ -121,9 +179,11 @@ export default function DashboardPage() {
                 </CardTitle>
             </CardHeader>
             <CardContent>
-                <p className="text-xl text-accent-foreground/90">
-                    A short, 10-minute walk after meals can do wonders for managing blood sugar levels. It helps your body use sugar more effectively.
-                </p>
+                {tipLoading ? (
+                  <p className="text-xl text-accent-foreground/90 animate-pulse">Generating your daily tip...</p>
+                ) : (
+                  <p className="text-xl text-accent-foreground/90">{dailyTip}</p>
+                )}
             </CardContent>
         </Card>
       </div>
