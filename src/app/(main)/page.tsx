@@ -53,7 +53,7 @@ export default function DashboardPage() {
             timestamp: d.timestamp.toISOString()
         }));
         
-        const moodData = placeholderMoodLog.map(log => ({...log, timestamp: log.timestamp.toISOString()}));
+        const moodData = placeholderMoodLog.map(log => ({...log, journalEntry: log.journalEntry || '', timestamp: log.timestamp.toISOString()}));
 
         // In a real app, this would be fetched from a database
         const activityLog: ActivityLog[] = []; 
@@ -101,12 +101,12 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-6 md:hidden">
         {mobileNavItems.map(item => (
-          <Link href={item.href} key={item.href} passHref>
-            <Button variant="outline" className="w-full h-20 flex-col gap-2">
-              <item.icon className="h-7 w-7" />
-              <span className="text-sm font-semibold">{item.label}</span>
+            <Button asChild variant="outline" className="w-full h-20 flex-col gap-2" key={item.href}>
+              <Link href={item.href}>
+                <item.icon className="h-7 w-7" />
+                <span className="text-sm font-semibold">{item.label}</span>
+              </Link>
             </Button>
-          </Link>
         ))}
       </div>
 
@@ -149,9 +149,9 @@ export default function DashboardPage() {
                 <p className="text-2xl font-bold">Metformin</p>
                 <p className="text-lg text-muted-foreground">at 8:00 PM</p>
             </div>
-            <Link href="/medications" passHref>
-              <Button size="lg" className="w-full text-lg py-6">View & Log Medications</Button>
-            </Link>
+            <Button asChild size="lg" className="w-full text-lg py-6">
+              <Link href="/medications">View & Log Medications</Link>
+            </Button>
           </CardContent>
         </Card>
         
@@ -165,9 +165,9 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent className="flex-grow flex flex-col justify-center gap-4">
              <p className="text-center text-lg">You last logged your mood as feeling <span className="font-bold">Good</span>.</p>
-             <Link href="/mood" passHref>
-              <Button size="lg" variant="outline" className="w-full text-lg py-6">Track Your Mood</Button>
-            </Link>
+             <Button asChild size="lg" variant="outline" className="w-full text-lg py-6">
+              <Link href="/mood">Track Your Mood</Link>
+            </Button>
           </CardContent>
         </Card>
         

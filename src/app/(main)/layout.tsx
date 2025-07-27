@@ -50,17 +50,18 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
           <SidebarMenu>
             {navItems.map((item) => (
               <SidebarMenuItem key={item.href}>
-                <Link href={item.href} legacyBehavior passHref>
-                  <SidebarMenuButton
-                    variant="default"
-                    className="text-lg py-6"
-                    isActive={pathname === item.href}
-                    tooltip={{ children: item.label, side: 'right' }}
-                  >
+                <SidebarMenuButton
+                  asChild
+                  variant="default"
+                  className="text-lg py-6"
+                  isActive={pathname === item.href}
+                  tooltip={{ children: item.label, side: 'right' }}
+                >
+                  <Link href={item.href}>
                     <item.icon className="h-6 w-6" />
                     <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
-                  </SidebarMenuButton>
-                </Link>
+                  </Link>
+                </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
           </SidebarMenu>
@@ -69,17 +70,18 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
             <SidebarSeparator />
             <SidebarMenu>
                  <SidebarMenuItem>
-                    <Link href={settingsItem.href} legacyBehavior passHref>
-                        <SidebarMenuButton
-                            variant="default"
-                            className="text-lg py-6"
-                            isActive={pathname === settingsItem.href}
-                            tooltip={{ children: settingsItem.label, side: 'right' }}
-                        >
+                    <SidebarMenuButton
+                        asChild
+                        variant="default"
+                        className="text-lg py-6"
+                        isActive={pathname === settingsItem.href}
+                        tooltip={{ children: settingsItem.label, side: 'right' }}
+                    >
+                        <Link href={settingsItem.href}>
                             <settingsItem.icon className="h-6 w-6" />
                             <span className="group-data-[collapsible=icon]:hidden">{settingsItem.label}</span>
-                        </SidebarMenuButton>
-                    </Link>
+                        </Link>
+                    </SidebarMenuButton>
                  </SidebarMenuItem>
             </SidebarMenu>
         </SidebarFooter>
