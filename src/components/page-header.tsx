@@ -19,7 +19,7 @@ export function PageHeader({ title, description, children, className, ...props }
   const isDashboard = pathname === '/';
 
   return (
-    <header className={cn('mb-6 flex items-start justify-between', className)} {...props}>
+    <header className={cn('mb-6 flex items-start justify-between', isDashboard && 'hidden md:flex', className)} {...props}>
       <div className="flex items-center gap-4">
         {!isDashboard && (
             <Button

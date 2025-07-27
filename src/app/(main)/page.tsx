@@ -12,10 +12,13 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/page-header';
-import { HeartPulse, Droplets, Pill, Smile, UtensilsCrossed } from 'lucide-react';
+import { HeartPulse, Droplets, Pill, Smile, UtensilsCrossed, Bike, Settings, HelpCircle } from 'lucide-react';
 import { bpDataForChart, bsDataForChart } from '@/lib/placeholder-data';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from '@/components/ui/chart';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { Logo } from '@/components/logo';
+import { cn } from '@/lib/utils';
+
 
 const bpChartConfig = {
   systolic: {
@@ -35,6 +38,18 @@ const bsChartConfig = {
   },
 } satisfies ChartConfig;
 
+const mobileNavItems = [
+  { href: '/blood-pressure', label: 'Blood Pressure', icon: HeartPulse },
+  { href: '/blood-sugar', label: 'Blood Sugar', icon: Droplets },
+  { href: '/medications', label: 'Medications', icon: Pill },
+  { href: '/fitness', label: 'Fitness', icon: Bike },
+  { href: '/nutrition', label: 'Nutrition', icon: UtensilsCrossed },
+  { href: '/mood', label: 'Mood', icon: Smile },
+  { href: '/help', label: 'Help', icon: HelpCircle },
+  { href: '/settings', label: 'Settings', icon: Settings },
+];
+
+
 export default function DashboardPage() {
   const [greeting, setGreeting] = useState('');
 
@@ -50,6 +65,23 @@ export default function DashboardPage() {
   
   return (
     <div className="w-full">
+      <div className="md:hidden mb-6">
+        <div className="flex justify-center items-center gap-3 mb-6">
+            <Logo className="w-12 h-12" />
+            <h1 className="font-headline text-3xl font-bold text-foreground/90">
+              Nan-Track
+            </h1>
+        </div>
+        <div className="grid grid-cols-4 gap-2">
+            {mobileNavItems.map((item) => (
+                <Link href={item.href} key={item.href} className="flex flex-col items-center justify-center gap-1 p-2 rounded-lg bg-card text-card-foreground hover:bg-accent transition-colors">
+                    <item.icon className="w-8 h-8 text-primary" />
+                    <span className="text-xs text-center">{item.label}</span>
+                </Link>
+            ))}
+        </div>
+      </div>
+      
       <PageHeader
         title={`${greeting}, Nan-Nan!`}
         description={`Here's your health summary for ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}.`}
