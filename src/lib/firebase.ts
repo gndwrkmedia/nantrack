@@ -14,6 +14,10 @@ const firebaseConfig = {
 
 export const getFirebaseApp = (): FirebaseApp | null => {
     if (typeof window !== "undefined") {
+        if (!firebaseConfig.apiKey) {
+            console.error("Firebase API key is missing. Make sure to set NEXT_PUBLIC_FIREBASE_API_KEY in your .env file");
+            return null;
+        }
         return !getApps().length ? initializeApp(firebaseConfig) : getApp();
     }
     return null;
