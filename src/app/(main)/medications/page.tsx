@@ -6,9 +6,20 @@ import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { CheckCircle, PlusCircle, Timer, Pill, Lightbulb } from 'lucide-react';
+import { CheckCircle, PlusCircle, Timer, Pill, Lightbulb, Trash2 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { placeholderMedications } from '@/lib/placeholder-data';
@@ -74,12 +85,21 @@ export default function MedicationsPage() {
     });
   };
 
+  const handleRemoveMed = (medId: string) => {
+    setMeds(prev => prev.filter(m => m.id !== medId));
+    toast({
+        title: "Medication Removed",
+        description: "The medication has been removed from your list.",
+    });
+  };
+
   return (
     <div>
       <PageHeader
         title="Medication Manager"
         description="Keep track of your medications and never miss a dose."
-      >
+      />
+    <div className="flex justify-end mb-4 md:hidden">
         <Dialog>
           <DialogTrigger asChild>
             <Button size="lg" className="text-lg h-12">
@@ -113,7 +133,7 @@ export default function MedicationsPage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      </PageHeader>
+    </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {meds.map((med) => {
@@ -125,14 +145,37 @@ export default function MedicationsPage() {
           return (
             <Card key={med.id} className={cn("flex flex-col transition-all duration-200 hover:shadow-lg hover:-translate-y-1", !isReady ? 'bg-muted/50' : 'bg-card')}>
               <CardHeader>
-                  <div className="flex items-center gap-4">
-                    <div className="bg-primary/20 p-3 rounded-full">
-                        <Pill className="h-8 w-8 text-primary" />
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                        <div className="bg-primary/20 p-3 rounded-full">
+                            <Pill className="h-8 w-8 text-primary" />
+                        </div>
+                        <div>
+                            <CardTitle className="text-2xl">{med.name}</CardTitle>
+                            <CardDescription className="text-base">{med.dosage} &bull; {med.frequency}</CardDescription>
+                        </div>
                     </div>
-                    <div>
-                        <CardTitle className="text-2xl">{med.name}</CardTitle>
-                        <CardDescription className="text-base">{med.dosage} &bull; {med.frequency}</CardDescription>
-                    </div>
+                     <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 flex-shrink-0">
+                                <Trash2 className="h-5 w-5 text-muted-foreground hover:text-destructive" />
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This will permanently remove {med.name} from your medication list. This action cannot be undone.
+                            </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleRemoveMed(med.id)}>
+                                Yes, Remove
+                            </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
                   </div>
               </CardHeader>
               <CardContent className="flex-grow flex flex-col justify-between gap-4">
@@ -172,6 +215,41 @@ export default function MedicationsPage() {
             </Card>
           );
         })}
+        <Dialog>
+          <DialogTrigger asChild>
+            <Card className="hidden md:flex items-center justify-center border-dashed border-2 cursor-pointer hover:border-primary hover:text-primary transition-colors">
+                <div className="text-center text-muted-foreground">
+                    <PlusCircle className="h-12 w-12 mx-auto mb-2" />
+                    <p className="text-lg font-semibold">Add New Medication</p>
+                </div>
+            </Card>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle className="text-2xl">Add New Medication</DialogTitle>
+              <DialogDescription>
+                Fill in the details for your new medication here.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="name" className="text-right text-base">Name</Label>
+                <Input id="name" defaultValue="Aspirin" className="col-span-3 h-10 text-base" />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="dosage" className="text-right text-base">Dosage</Label>
+                <Input id="dosage" defaultValue="81mg" className="col-span-3 h-10 text-base" />
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="frequency" className="text-right text-base">Frequency</Label>
+                <Input id="frequency" defaultValue="Once a day" className="col-span-3 h-10 text-base" />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit" size="lg">Save Medication</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
        <div className="mt-6 space-y-6">
@@ -213,9 +291,3 @@ export default function MedicationsPage() {
                     ))}
                 </TableBody>
               </Table>
-            </CardContent>
-          </Card>
-      </div>
-    </div>
-  );
-}

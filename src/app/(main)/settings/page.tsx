@@ -1,7 +1,7 @@
 
 'use client';
 
-import React from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { PageHeader } from '@/components/page-header';
@@ -23,23 +23,47 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { Trash2, FileDown } from 'lucide-react';
+import { PrintableReport } from '@/components/printable-report';
+import { placeholderBpLog, placeholderBsLog, placeholderMedications, placeholderMoodLog, placeholderExercises } from '@/lib/placeholder-data';
+
 
 export default function SettingsPage() {
   const { toast } = useToast();
+  const reportRef = useRef<HTMLDivElement>(null);
+  const [isExporting, setIsExporting] = useState(false);
+
+  // State for notification toggles
+  const [medReminders, setMedReminders] = useState(true);
+  const [weeklySummary, setWeeklySummary] = useState(false);
+
+  // Load saved preferences from localStorage
+  useEffect(() => {
+    const savedMedReminders = localStorage.getItem('nan-track-med-reminders');
+    if (savedMedReminders !== null) {
+      setMedReminders(JSON.parse(savedMedReminders));
+    }
+    const savedWeeklySummary = localStorage.getItem('nan-track-weekly-summary');
+    if (savedWeeklySummary !== null) {
+      setWeeklySummary(JSON.parse(savedWeeklySummary));
+    }
+  }, []);
+
+  const handleToggle = (setter: React.Dispatch<React.SetStateAction<boolean>>, key: string, label: string) => {
+    setter(prev => {
+      const newValue = !prev;
+      localStorage.setItem(key, JSON.stringify(newValue));
+      toast({
+        title: "Preference Updated",
+        description: `${label} notifications have been turned ${newValue ? 'ON' : 'OFF'}.`,
+      });
+      return newValue;
+    });
+  };
 
   const handleClearData = () => {
-    // This is a simplified approach for a prototype. It clears localStorage.
-    // In a real app with a backend, this would make an API call.
     try {
-        // This is a simple way to "clear" data in a prototype by resetting state via localStorage
-        // In a real app this would be an API call to a backend to clear user-specific data.
-        // For now, we assume other pages will check localStorage for updates, or this would
-        // require a global state management solution (like Context or Redux) to propagate changes.
-        // As a simple demo, we'll just show a toast.
         console.log("Clearing demo data...");
-        // A more robust implementation would involve a global state manager.
-        // For this prototype, we'll just show the toast as the action's effect.
-         toast({
+        toast({
           title: "Demo Data Cleared",
           description: "All placeholder blood pressure, blood sugar, fitness, and mood logs have been removed.",
         });
@@ -52,29 +76,62 @@ export default function SettingsPage() {
     }
   };
 
-  const handleExportPdf = () => {
-    // This is a placeholder function. In a real app, this would be much more complex.
-    // It would involve gathering data from all over the app, probably from a global state or context,
-    // then formatting it into a hidden div, which would then be rendered to PDF.
+  const handleExportPdf = async () => {
+    if (!reportRef.current) {
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Could not find the report content to export.",
+        });
+        return;
+    }
     
+    setIsExporting(true);
     toast({
-      title: "Generating PDF...",
-      description: "This feature is for demonstration purposes. A full implementation would gather all logs and charts.",
+        title: "Generating PDF...",
+        description: "Please wait while your health report is being created.",
     });
-    
-    const doc = new jsPDF();
-    doc.text("Nan-Track Health Report", 20, 20);
-    doc.text("Generated on: " + new Date().toLocaleDateString(), 20, 30);
-    doc.text("This is a sample report.", 20, 40);
-    
-    // In a real implementation, you would loop through data and add it to the PDF.
-    // For example:
-    // doc.text("Blood Pressure Log:", 20, 50);
-    // placeholderBpLog.forEach((log, index) => {
-    //   doc.text(`${log.timestamp.toLocaleDateString()}: ${log.systolic}/${log.diastolic}`, 20, 60 + (index * 10));
-    // });
-    
-    doc.save("Nan-Track_Health_Report.pdf");
+
+    try {
+        const canvas = await html2canvas(reportRef.current, {
+            scale: 2, // Higher scale for better quality
+            useCORS: true,
+        });
+        
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF({
+            orientation: 'p',
+            unit: 'mm',
+            format: 'a4',
+        });
+
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const canvasWidth = canvas.width;
+        const canvasHeight = canvas.height;
+        const ratio = canvasWidth / canvasHeight;
+        
+        const width = pdfWidth - 20; // with some margin
+        const height = width / ratio;
+
+        pdf.addImage(imgData, 'PNG', 10, 10, width, height);
+        pdf.save("Nan-Track_Health_Report.pdf");
+
+        toast({
+            title: "Export Successful!",
+            description: "Your health report has been downloaded.",
+        });
+
+    } catch (error) {
+        console.error("Failed to generate PDF:", error);
+        toast({
+            variant: "destructive",
+            title: "Export Failed",
+            description: "An error occurred while generating the PDF.",
+        });
+    } finally {
+        setIsExporting(false);
+    }
   };
 
   return (
@@ -83,6 +140,21 @@ export default function SettingsPage() {
         title="Settings"
         description="Manage your account and application data."
       />
+
+      {/* Hidden component for printing */}
+      <div className="absolute top-0 left-0 -z-10 opacity-0" aria-hidden="true">
+        <PrintableReport 
+            ref={reportRef}
+            data={{
+                bpLog: placeholderBpLog,
+                bsLog: placeholderBsLog,
+                medications: placeholderMedications,
+                moodLog: placeholderMoodLog,
+                activityLog: [], // Assuming activity log is not in placeholder data
+                user: { name: 'Nan-Nan' }
+            }}
+        />
+      </div>
 
       <div className="grid gap-6 max-w-2xl mx-auto">
         <Card>
@@ -97,7 +169,7 @@ export default function SettingsPage() {
             </div>
              <div className="space-y-2">
               <Label htmlFor="email" className="text-base">Email Address</Label>
-              <Input id="email" type="email" defaultValue="chausenfluck@gmail.com" className="text-lg h-12"/>
+              <Input id="email" type="email" defaultValue="nan.nan@email.com" className="text-lg h-12" readOnly/>
             </div>
             <Button size="lg" className="text-lg h-12">Save Changes</Button>
           </CardContent>
@@ -116,7 +188,11 @@ export default function SettingsPage() {
                   Receive alerts when it's time to take your medication.
                 </span>
               </Label>
-              <Switch id="med-reminders" defaultChecked />
+              <Switch 
+                id="med-reminders" 
+                checked={medReminders}
+                onCheckedChange={() => handleToggle(setMedReminders, 'nan-track-med-reminders', 'Medication Reminders')}
+              />
             </div>
             <div className="flex items-center justify-between space-x-2">
               <Label htmlFor="weekly-summary" className="flex flex-col space-y-1 flex-grow">
@@ -125,7 +201,11 @@ export default function SettingsPage() {
                   Get a weekly email with your health progress and trends.
                 </span>
               </Label>
-              <Switch id="weekly-summary" />
+              <Switch 
+                id="weekly-summary"
+                checked={weeklySummary}
+                onCheckedChange={() => handleToggle(setWeeklySummary, 'nan-track-weekly-summary', 'Weekly Summary')}
+              />
             </div>
           </CardContent>
         </Card>
@@ -136,9 +216,9 @@ export default function SettingsPage() {
             <CardDescription>Export or permanently remove your logged data.</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4 sm:grid-cols-2">
-            <Button variant="outline" size="lg" className="h-12 w-full text-base" onClick={handleExportPdf}>
+            <Button variant="outline" size="lg" className="h-12 w-full text-base" onClick={handleExportPdf} disabled={isExporting}>
                 <FileDown className="mr-2 h-5 w-5" />
-                Export Health Report (PDF)
+                {isExporting ? 'Exporting...' : 'Export Health Report (PDF)'}
             </Button>
             <AlertDialog>
               <AlertDialogTrigger asChild>
@@ -166,6 +246,4 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
       </div>
-    </div>
-  );
-}
+    
