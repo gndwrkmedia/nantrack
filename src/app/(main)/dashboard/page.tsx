@@ -11,7 +11,6 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { bpDataForChart, bsDataForChart, placeholderMedications } from '@/lib/placeholder-data';
 import { useAuth } from '@/hooks/use-auth';
 import { HealthTip } from '@/components/health-tip';
-import { generateTip } from '@/ai/flows/generate-tip-flow';
 
 const bpChartConfig = {
   systolic: { label: "Systolic", color: "hsl(var(--primary))" },
@@ -38,25 +37,7 @@ const moodChartConfig = {
 
 export default function DashboardPage() {
   const { user } = useAuth();
-  const [healthTip, setHealthTip] = useState<string>('');
-  const [isTipLoading, setIsTipLoading] = useState<boolean>(true);
   const nextMed = placeholderMedications[0];
-
-  useEffect(() => {
-    async function fetchTip() {
-      try {
-        setIsTipLoading(true);
-        const { tip } = await generateTip({ context: 'Overall wellness for a senior' });
-        setHealthTip(tip);
-      } catch (error) {
-        console.error("Failed to fetch health tip:", error);
-        setHealthTip("Remember to stay hydrated by drinking water throughout the day!");
-      } finally {
-        setIsTipLoading(false);
-      }
-    }
-    fetchTip();
-  }, []);
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -76,7 +57,7 @@ export default function DashboardPage() {
          <HealthTip
             icon={Lightbulb}
             title="Your Daily Health Tip"
-            content={isTipLoading ? "Generating a personalized tip for you..." : healthTip}
+            content="Remember to stay hydrated by drinking water throughout the day! It's great for your overall health."
           />
         
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
