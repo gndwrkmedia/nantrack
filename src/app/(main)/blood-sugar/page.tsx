@@ -1,6 +1,7 @@
+
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -15,6 +16,8 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from '
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { placeholderBsLog, bsDataForChart } from '@/lib/placeholder-data';
 import { useToast } from '@/hooks/use-toast';
+import { generateHealthTip } from '@/ai/flows/generate-health-tips-flow';
+import { Lightbulb } from 'lucide-react';
 
 const bsFormSchema = z.object({
   level: z.coerce.number().min(20, "Value must be at least 20").max(600, "Value must be less than 600"),
@@ -32,6 +35,9 @@ const chartConfig = {
 
 export default function BloodSugarPage() {
   const { toast } = useToast();
+  const [healthTip, setHealthTip] = useState<string>('');
+  const [tipLoading, setTipLoading] = useState(true);
+
   const form = useForm<BsFormValues>({
     resolver: zodResolver(bsFormSchema),
     defaultValues: {
@@ -39,6 +45,31 @@ export default function BloodSugarPage() {
         readingTime: 'Fasting',
     }
   });
+
+   useEffect(() => {
+    const fetchTip = async () => {
+      setTipLoading(true);
+      try {
+        const latestReading = placeholderBsLog[0];
+        const historicalData = bsDataForChart.map(d => ({level: d.level}));
+
+        const response = await generateHealthTip({
+          readingType: 'bloodSugar',
+          currentReading: { level: latestReading.level },
+          historicalData: historicalData,
+        });
+        if (response.tip) {
+          setHealthTip(response.tip);
+        }
+      } catch (error) {
+        console.error("Error generating health tip:", error);
+        setHealthTip("Could not load a tip right now. Please try again later.");
+      } finally {
+        setTipLoading(false);
+      }
+    };
+    fetchTip();
+  }, []);
 
   function onSubmit(data: BsFormValues) {
     console.log(data);
@@ -56,7 +87,7 @@ export default function BloodSugarPage() {
         description="Log your glucose levels and watch your progress."
       />
       <div className="grid gap-6 lg:grid-cols-5">
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 space-y-6">
           <Card>
             <CardHeader>
               <CardTitle>Log New Reading</CardTitle>
@@ -104,6 +135,21 @@ export default function BloodSugarPage() {
                   <Button type="submit" size="lg" className="w-full text-lg h-12">Save Reading</Button>
                 </form>
               </Form>
+            </CardContent>
+          </Card>
+           <Card className="bg-accent/50 border-accent">
+            <CardHeader>
+                 <CardTitle className="flex items-center gap-3 text-xl">
+                    <Lightbulb className="h-7 w-7 text-accent-foreground" />
+                    <span>Personalized Tip</span>
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                {tipLoading ? (
+                  <p className="text-lg text-accent-foreground/90 animate-pulse">Generating advice...</p>
+                ) : (
+                  <p className="text-lg text-accent-foreground/90">{healthTip}</p>
+                )}
             </CardContent>
           </Card>
         </div>
