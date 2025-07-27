@@ -1,4 +1,5 @@
 import type {NextConfig} from 'next';
+import 'dotenv/config'
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -18,6 +19,9 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  env: {
+    GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+  }
 };
 
 export default nextConfig;
