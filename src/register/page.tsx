@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useAuth } from '@/hooks/use-auth';
+import { AuthProvider, useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -35,7 +35,7 @@ const formSchema = z.object({
   password: z.string().min(6, { message: 'Password must be at least 6 characters.' }),
 });
 
-export default function RegisterPage() {
+function RegisterPageContent() {
   const router = useRouter();
   const { register } = useAuth();
   const { toast } = useToast();
@@ -157,4 +157,13 @@ export default function RegisterPage() {
       </Card>
     </div>
   );
+}
+
+
+export default function RegisterPage() {
+    return (
+        <AuthProvider>
+            <RegisterPageContent />
+        </AuthProvider>
+    )
 }

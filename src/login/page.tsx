@@ -1,13 +1,12 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useAuth } from '@/hooks/use-auth';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -28,13 +27,14 @@ import {
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Logo } from '@/components/logo';
+import { AuthProvider, useAuth } from '@/hooks/use-auth';
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email.' }),
   password: z.string().min(1, { message: 'Please enter your password.' }),
 });
 
-export default function LoginPage() {
+function LoginPageContent() {
   const router = useRouter();
   const { login } = useAuth();
   const { toast } = useToast();
@@ -137,4 +137,13 @@ export default function LoginPage() {
       </Card>
     </div>
   );
+}
+
+
+export default function LoginPage() {
+    return (
+        <AuthProvider>
+            <LoginPageContent />
+        </AuthProvider>
+    )
 }

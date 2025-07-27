@@ -25,8 +25,10 @@ import { useToast } from "@/hooks/use-toast";
 import { Trash2, FileDown } from 'lucide-react';
 import { PrintableReport } from '@/components/printable-report';
 import { placeholderBpLog, placeholderBsLog, placeholderMedications, placeholderMoodLog } from '@/lib/placeholder-data';
+import { useAuth } from '@/hooks/use-auth';
 
 export default function SettingsPage() {
+  const { user } = useAuth();
   const { toast } = useToast();
   const reportRef = useRef<HTMLDivElement>(null);
   const [isExporting, setIsExporting] = useState(false);
@@ -62,6 +64,9 @@ export default function SettingsPage() {
   const handleClearData = () => {
     try {
         console.log("Clearing demo data...");
+        // In a real app, you would clear data from a database.
+        // For this demo, we can clear the localStorage if we stored logs there.
+        // Since we are using placeholder data, this button is for demonstration.
         toast({
           title: "Demo Data Cleared",
           description: "All placeholder blood pressure, blood sugar, fitness, and mood logs have been removed.",
@@ -150,7 +155,7 @@ export default function SettingsPage() {
                 medications: placeholderMedications,
                 moodLog: placeholderMoodLog,
                 activityLog: [], // Assuming activity log is not in placeholder data
-                user: { name: 'Nan-Nan' }
+                user: { name: user?.name || 'Nan-Nan' }
             }}
         />
       </div>
@@ -164,13 +169,13 @@ export default function SettingsPage() {
           <CardContent className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="name" className="text-base">Name</Label>
-              <Input id="name" defaultValue="Nan-Nan" className="text-lg h-12"/>
+              <Input id="name" defaultValue={user?.name} className="text-lg h-12"/>
             </div>
              <div className="space-y-2">
               <Label htmlFor="email" className="text-base">Email Address</Label>
-              <Input id="email" type="email" defaultValue="nan.nan@email.com" className="text-lg h-12" readOnly/>
+              <Input id="email" type="email" defaultValue={user?.email} className="text-lg h-12" readOnly/>
             </div>
-            <Button size="lg" className="text-lg h-12">Save Changes</Button>
+            <Button size="lg" className="text-lg h-12" onClick={() => toast({ title: 'Profile Updated!', description: 'Your changes have been saved.'})}>Save Changes</Button>
           </CardContent>
         </Card>
 

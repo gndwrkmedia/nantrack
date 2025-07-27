@@ -5,11 +5,25 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Logo } from '@/components/logo';
 
+// Function to check if a user session exists in localStorage
+const checkUserSession = () => {
+  if (typeof window !== 'undefined') {
+    const session = localStorage.getItem('nan-track-session');
+    return session ? JSON.parse(session) : null;
+  }
+  return null;
+};
+
 export default function RootPage() {
   const router = useRouter();
 
   useEffect(() => {
-    router.replace('/dashboard');
+    const user = checkUserSession();
+    if (user) {
+      router.replace('/dashboard');
+    } else {
+      router.replace('/login');
+    }
   }, [router]);
 
   return (

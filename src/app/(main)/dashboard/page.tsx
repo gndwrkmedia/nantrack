@@ -10,6 +10,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from '
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { bpDataForChart, bsDataForChart, placeholderMedications } from '@/lib/placeholder-data';
 import { HealthTip } from '@/components/health-tip';
+import { useAuth } from '@/hooks/use-auth';
 
 const bpChartConfig = {
   systolic: { label: "Systolic", color: "hsl(var(--primary))" },
@@ -35,6 +36,7 @@ const moodChartConfig = {
 } satisfies ChartConfig;
 
 export default function DashboardPage() {
+  const { user } = useAuth();
   const nextMed = placeholderMedications[0];
 
   const getGreeting = () => {
@@ -43,11 +45,13 @@ export default function DashboardPage() {
     if (hour < 18) return 'Good Afternoon';
     return 'Good Evening';
   };
+  
+  const displayName = user?.name || 'there';
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title={`${getGreeting()}, Nan-Nan!`}
+        title={`${getGreeting()}, ${displayName}!`}
         description="Here’s a quick look at your health today."
       />
 

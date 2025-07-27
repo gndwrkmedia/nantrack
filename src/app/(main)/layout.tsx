@@ -1,7 +1,8 @@
 
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -18,6 +19,8 @@ import {
 } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
 import { LayoutDashboard, HeartPulse, Droplets, Pill, Bike, UtensilsCrossed, Smile, Settings, HelpCircle, LogOut } from 'lucide-react';
+import { useAuth, AuthProvider } from '@/hooks/use-auth';
+import { Button } from '@/components/ui/button';
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -34,8 +37,24 @@ const bottomNavItems = [
     { href: '/settings', label: 'Settings', icon: Settings }
 ];
 
-export default function MainLayout({ children }: { children: React.ReactNode }) {
+function MainLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { user, logout } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user === null) {
+      router.replace('/login');
+    }
+  }, [user, router]);
+
+  if (!user) {
+    return (
+       <div className="flex h-screen w-screen items-center justify-center bg-background">
+          <Logo className="h-24 w-24" />
+      </div>
+    );
+  }
 
   return (
     <SidebarProvider>
@@ -87,6 +106,17 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                  ))}
+                 <SidebarMenuItem>
+                    <SidebarMenuButton
+                        variant="default"
+                        className="text-lg py-6"
+                        onClick={logout}
+                        tooltip={{ children: "Logout", side: 'right' }}
+                    >
+                         <LogOut className="h-6 w-6" />
+                         <span className="group-data-[collapsible=icon]:hidden">Logout</span>
+                    </SidebarMenuButton>
+                 </SidebarMenuItem>
             </SidebarMenu>
         </SidebarFooter>
       </Sidebar>
@@ -97,4 +127,12 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       </SidebarInset>
     </SidebarProvider>
   );
+}
+
+export default function MainLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <AuthProvider>
+      <MainLayoutContent>{children}</MainLayoutContent>
+    </AuthProvider>
+  )
 }
