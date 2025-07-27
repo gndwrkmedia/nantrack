@@ -122,7 +122,7 @@ export default function MedicationsPage() {
           const progress = isTaken ? ((med.intervalHours * 3600 * 1000 - remainingTime) / (med.intervalHours * 3600 * 1000)) * 100 : 0;
 
           return (
-            <Card key={med.id} className={cn("flex flex-col transition-all", !isReady ? 'bg-muted/50' : 'bg-card')}>
+            <Card key={med.id} className={cn("flex flex-col transition-all duration-200 hover:shadow-lg hover:-translate-y-1", !isReady ? 'bg-muted/50' : 'bg-card')}>
               <CardHeader>
                   <div className="flex items-center gap-4">
                     <div className="bg-primary/20 p-3 rounded-full">

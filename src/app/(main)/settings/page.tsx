@@ -121,7 +121,7 @@ export default function SettingsPage() {
             <CardDescription>Export or permanently remove your logged data.</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4 sm:grid-cols-2">
-            <Button variant="outline" size="lg" className="text-lg h-12 w-full" onClick={handleExportPdf}>
+            <Button variant="outline" size="lg" className="h-12 w-full text-base" onClick={handleExportPdf}>
                 <FileDown className="mr-2 h-5 w-5" />
                 Export Health Report (PDF)
             </Button>

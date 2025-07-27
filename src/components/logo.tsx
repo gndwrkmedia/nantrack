@@ -1,12 +1,13 @@
 import React from 'react';
+import { cn } from '@/lib/utils';
 
 export function Logo({ className }: { className?: string }) {
   return (
     <svg
-      className={className}
+      className={cn("animate-pulse-slow", className)}
       viewBox="0 0 100 100"
       xmlns="http://www.w3.org/2000/svg"
-      aria-label="Golden Health Logo"
+      aria-label="Nan-Track Logo"
     >
       <defs>
         <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">

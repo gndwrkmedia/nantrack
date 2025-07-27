@@ -16,6 +16,7 @@ import { HeartPulse, Droplets, Pill, Smile, Bike, UtensilsCrossed, LayoutDashboa
 import { bpDataForChart, bsDataForChart } from '@/lib/placeholder-data';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from '@/components/ui/chart';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { cn } from '@/lib/utils';
 
 const mobileNavItems = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -77,7 +78,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
+        <Card className="lg:col-span-2 transition-all duration-200 hover:shadow-lg hover:-translate-y-1">
             <CardHeader>
               <CardTitle className="flex items-center gap-3 text-2xl">
                   <HeartPulse className="h-8 w-8 text-primary" />
@@ -101,7 +102,7 @@ export default function DashboardPage() {
             </CardContent>
         </Card>
 
-        <Card>
+        <Card className="transition-all duration-200 hover:shadow-lg hover:-translate-y-1">
             <CardHeader>
               <CardTitle className="flex items-center gap-3 text-2xl">
                   <Droplets className="h-8 w-8 text-primary" />
@@ -124,7 +125,7 @@ export default function DashboardPage() {
             </CardContent>
         </Card>
 
-        <Card className="flex flex-col">
+        <Card className="flex flex-col transition-all duration-200 hover:shadow-lg hover:-translate-y-1">
           <CardHeader>
             <CardTitle className="flex items-center gap-3 text-2xl">
               <Pill className="h-8 w-8 text-primary" />
@@ -144,7 +145,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
         
-        <Card className="flex flex-col">
+        <Card className="flex flex-col transition-all duration-200 hover:shadow-lg hover:-translate-y-1">
           <CardHeader>
             <CardTitle className="flex items-center gap-3 text-2xl">
               <Smile className="h-8 w-8 text-primary" />
@@ -160,7 +161,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-         <Card className="flex flex-col">
+         <Card className="flex flex-col transition-all duration-200 hover:shadow-lg hover:-translate-y-1">
           <CardHeader>
             <CardTitle className="flex items-center gap-3 text-2xl">
               <UtensilsCrossed className="h-8 w-8 text-primary" />
