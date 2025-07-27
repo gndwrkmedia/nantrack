@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/page-header';
-import { HeartPulse, Droplets, Pill, Smile, Bike, UtensilsCrossed, Lightbulb } from 'lucide-react';
+import { HeartPulse, Droplets, Pill, Smile, Bike, UtensilsCrossed, Lightbulb, LayoutDashboard } from 'lucide-react';
 import { bpDataForChart, bsDataForChart } from '@/lib/placeholder-data';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from '@/components/ui/chart';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -20,6 +20,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 
 const mobileNavItems = [
+  { href: '/', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/blood-pressure', label: 'BP', icon: HeartPulse },
   { href: '/blood-sugar', label: 'Sugar', icon: Droplets },
   { href: '/medications', label: 'Meds', icon: Pill },
@@ -91,9 +92,9 @@ export default function DashboardPage() {
         description={`Here's your health summary for ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}.`}
       />
 
-      <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-6 md:hidden">
+      <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 mb-6 md:hidden">
         {mobileNavItems.map(item => (
-            <Button asChild variant="solid" className="w-full h-20 flex-col gap-2" key={item.href}>
+            <Button asChild variant="outline" className="w-full h-20 flex-col gap-2" key={item.href}>
               <Link href={item.href}>
                 <item.icon className="h-7 w-7" />
                 <span className="text-sm font-semibold">{item.label}</span>
