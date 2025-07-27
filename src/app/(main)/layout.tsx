@@ -48,6 +48,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
               <SidebarMenuItem key={item.href}>
                 <Link href={item.href} legacyBehavior passHref>
                   <SidebarMenuButton
+                    variant="default"
                     className="text-lg py-6"
                     isActive={pathname === item.href}
                     tooltip={{ children: item.label, side: 'right' }}
