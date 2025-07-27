@@ -19,7 +19,6 @@ import {
 import { Logo } from '@/components/logo';
 import { LayoutDashboard, HeartPulse, Droplets, Pill, Bike, UtensilsCrossed, Smile, Settings, HelpCircle, LogOut } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
-import { Button } from '@/components/ui/button';
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },

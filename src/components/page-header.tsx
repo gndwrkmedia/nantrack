@@ -6,6 +6,7 @@ import type React from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
+import { useSidebar } from './ui/sidebar';
 
 interface PageHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
   title: string;
@@ -16,10 +17,11 @@ interface PageHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
 export function PageHeader({ title, description, children, className, ...props }: PageHeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const isDashboard = pathname === '/';
+  const { toggleSidebar } = useSidebar();
+  const isDashboard = pathname === '/dashboard';
 
   return (
-    <header className={cn('mb-6 flex items-start justify-between', isDashboard && 'hidden md:flex', className)} {...props}>
+    <header className={cn('mb-6 flex items-start justify-between', className)} {...props}>
       <div className="flex items-center gap-4">
         {!isDashboard && (
             <Button
