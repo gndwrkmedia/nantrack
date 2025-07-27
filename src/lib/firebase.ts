@@ -11,14 +11,27 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
+let firebaseApp: FirebaseApp | null = null;
 
 export const getFirebaseApp = (): FirebaseApp | null => {
-    if (typeof window !== "undefined") {
+    if (typeof window === "undefined") {
+        return null;
+    }
+
+    if (!getApps().length) {
         if (!firebaseConfig.apiKey) {
-            console.error("Firebase API key is missing. Make sure to set NEXT_PUBLIC_FIREBASE_API_KEY in your .env file");
+            console.error("Firebase API key is missing. Make sure to set NEXT_PUBLIC_FIREBASE_API_KEY in your environment variables.");
             return null;
         }
-        return !getApps().length ? initializeApp(firebaseConfig) : getApp();
+        try {
+            firebaseApp = initializeApp(firebaseConfig);
+        } catch (e) {
+            console.error("Firebase initialization error", e);
+            return null;
+        }
+    } else {
+        firebaseApp = getApp();
     }
-    return null;
+    
+    return firebaseApp;
 }

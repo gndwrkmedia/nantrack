@@ -152,7 +152,7 @@ export default function SettingsPage() {
                 medications: placeholderMedications,
                 moodLog: placeholderMoodLog,
                 activityLog: [], // Assuming activity log is not in placeholder data
-                user: { name: user?.displayName || 'Nan-Nan' }
+                user: { name: user?.displayName || 'User' }
             }}
         />
       </div>
@@ -250,3 +250,4 @@ export default function SettingsPage() {
     </div>
   );
 }
+
