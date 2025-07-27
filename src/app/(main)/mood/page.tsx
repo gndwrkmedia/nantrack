@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { placeholderMoodLog } from '@/lib/placeholder-data';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -61,7 +62,7 @@ export default function MoodPage() {
         const response = await generateLifestyleTip({
           tipType: 'mood',
           moodData: { 
-            moodLog: moodLog.map(log => ({...log, timestamp: log.timestamp.toISOString()}))
+            moodLog: moodLog.map(log => ({...log, journalEntry: log.journalEntry || "", timestamp: log.timestamp.toISOString()}))
           },
         });
         if (response.tip) {
@@ -156,11 +157,32 @@ export default function MoodPage() {
                 </TableHeader>
                 <TableBody>
                   {moodLog.map((log) => (
-                    <TableRow key={log.id}>
-                      <TableCell className="text-base">{log.timestamp.toLocaleDateString()}</TableCell>
-                      <TableCell className="text-4xl">{moodOptions.find(m => m.level === log.mood)?.emoji}</TableCell>
-                      <TableCell className="text-base text-muted-foreground truncate max-w-xs">{log.journalEntry}</TableCell>
-                    </TableRow>
+                    <Dialog key={log.id}>
+                        <DialogTrigger asChild>
+                            <TableRow className="cursor-pointer">
+                                <TableCell className="text-base">{log.timestamp.toLocaleDateString()}</TableCell>
+                                <TableCell className="text-4xl">{moodOptions.find(m => m.level === log.mood)?.emoji}</TableCell>
+                                <TableCell className="text-base text-muted-foreground truncate max-w-[150px]">{log.journalEntry}</TableCell>
+                            </TableRow>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle className='text-2xl'>
+                                    Mood on {log.timestamp.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                                </DialogTitle>
+                                <DialogDescription className='text-center sm:text-left'>
+                                    <span className="text-6xl my-4 block">{moodOptions.find(m => m.level === log.mood)?.emoji}</span>
+                                    <span className="text-xl font-medium text-foreground">{moodOptions.find(m => m.level === log.mood)?.label}</span>
+                                </DialogDescription>
+                            </DialogHeader>
+                            <div>
+                                <h3 className="font-bold text-lg mb-2">Your Journal Entry:</h3>
+                                <p className="text-base text-muted-foreground bg-muted/50 p-4 rounded-md min-h-[100px]">
+                                    {log.journalEntry || "No entry written."}
+                                </p>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
                   ))}
                 </TableBody>
               </Table>

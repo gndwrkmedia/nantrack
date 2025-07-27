@@ -20,7 +20,7 @@ const ActivityLogSchema = z.object({
 
 const MoodLogSchema = z.object({
   mood: z.number(),
-  journalEntry: z.string().optional(),
+  journalEntry: z.string(),
   timestamp: z.string(),
 });
 
@@ -34,12 +34,12 @@ const GenerateLifestyleTipInputSchema = z.object({
   nutritionData: NutritionDataSchema.optional(),
   moodData: z.object({ moodLog: z.array(MoodLogSchema) }).optional(),
 });
-type GenerateLifestyleTipInput = z.infer<typeof GenerateLifestyleTipInputSchema>;
+export type GenerateLifestyleTipInput = z.infer<typeof GenerateLifestyleTipInputSchema>;
 
 const GenerateLifestyleTipOutputSchema = z.object({
   tip: z.string().describe('A helpful, safe, and encouraging lifestyle tip for a senior user based on their recent activity.'),
 });
-type GenerateLifestyleTipOutput = z.infer<typeof GenerateLifestyleTipOutputSchema>;
+export type GenerateLifestyleTipOutput = z.infer<typeof GenerateLifestyleTipOutputSchema>;
 
 
 const prompt = ai.definePrompt({
@@ -53,19 +53,20 @@ const prompt = ai.definePrompt({
     **User's Data:**
     - Tip Type Requested: {{{tipType}}}
     {{#if fitnessData}}
-    - Fitness Log: {{json fitnessData.activityLog}}
+    - Fitness Log: {{#if fitnessData.activityLog}}{{json fitnessData.activityLog}}{{else}}No activity logged yet.{{/if}}
     {{/if}}
     {{#if nutritionData}}
     - Nutrition Log (Water): {{json nutritionData}}
     {{/if}}
     {{#if moodData}}
-    - Mood Log: {{json moodData.moodLog}}
+    - Mood Log: {{#if moodData.moodLog}}{{json moodData.moodLog}}{{else}}No mood logged yet.{{/if}}
     {{/if}}
 
     **Your Task:**
     Based on the data for the requested tip type, generate one supportive and helpful tip.
     - If the user is doing well (e.g., consistent exercise, good hydration, positive mood), provide encouragement and celebrate their progress.
     - If there's room for improvement (e.g., no recent activity, low water intake, sad mood), offer a gentle, easy-to-implement suggestion. For example, suggest a short walk, a glass of water, or a relaxing activity.
+    - If there is no data yet, provide a general encouraging tip for that category.
     - Keep the tone light, positive, and conversational.
 
     Generate only the tip in the 'tip' field.

@@ -13,9 +13,11 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarInset,
+  SidebarFooter,
+  SidebarSeparator,
 } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
-import { LayoutDashboard, HeartPulse, Droplets, Pill, Bike, UtensilsCrossed, Smile } from 'lucide-react';
+import { LayoutDashboard, HeartPulse, Droplets, Pill, Bike, UtensilsCrossed, Smile, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
@@ -27,6 +29,8 @@ const navItems = [
   { href: '/nutrition', label: 'Nutrition', icon: UtensilsCrossed },
   { href: '/mood', label: 'Mood', icon: Smile },
 ];
+
+const settingsItem = { href: '/settings', label: 'Settings', icon: Settings };
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -61,6 +65,24 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
             ))}
           </SidebarMenu>
         </SidebarContent>
+        <SidebarFooter>
+            <SidebarSeparator />
+            <SidebarMenu>
+                 <SidebarMenuItem>
+                    <Link href={settingsItem.href} legacyBehavior passHref>
+                        <SidebarMenuButton
+                            variant="default"
+                            className="text-lg py-6"
+                            isActive={pathname === settingsItem.href}
+                            tooltip={{ children: settingsItem.label, side: 'right' }}
+                        >
+                            <settingsItem.icon className="h-6 w-6" />
+                            <span className="group-data-[collapsible=icon]:hidden">{settingsItem.label}</span>
+                        </SidebarMenuButton>
+                    </Link>
+                 </SidebarMenuItem>
+            </SidebarMenu>
+        </SidebarFooter>
       </Sidebar>
       <SidebarInset>
         <main className="min-h-screen p-4 sm:p-6 lg:p-8">
