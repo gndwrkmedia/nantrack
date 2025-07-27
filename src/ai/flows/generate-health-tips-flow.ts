@@ -18,14 +18,14 @@ const ReadingSchema = z.object({
     timestamp: z.string().optional(),
 });
 
-export const GenerateHealthTipInputSchema = z.object({
+const GenerateHealthTipInputSchema = z.object({
   readingType: z.enum(['bloodPressure', 'bloodSugar']),
   currentReading: ReadingSchema,
   historicalData: z.array(ReadingSchema),
 });
 export type GenerateHealthTipInput = z.infer<typeof GenerateHealthTipInputSchema>;
 
-export const GenerateHealthTipOutputSchema = z.object({
+const GenerateHealthTipOutputSchema = z.object({
   tip: z.string().describe('A helpful, safe, and encouraging medical tip for a senior user based on their health readings.'),
 });
 export type GenerateHealthTipOutput = z.infer<typeof GenerateHealthTipOutputSchema>;
