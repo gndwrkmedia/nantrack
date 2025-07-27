@@ -17,6 +17,8 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { placeholderBpLog, bpDataForChart } from '@/lib/placeholder-data';
 import { useToast } from '@/hooks/use-toast';
 import type { BloodPressureLog } from '@/lib/types';
+import { HealthTip } from '@/components/health-tip';
+import { Lightbulb } from 'lucide-react';
 
 const bpFormSchema = z.object({
   systolic: z.coerce.number().min(50, "Value must be at least 50").max(300, "Value must be less than 300"),
@@ -127,6 +129,11 @@ export default function BloodPressurePage() {
               </Form>
             </CardContent>
           </Card>
+           <HealthTip
+            icon={Lightbulb}
+            title="Helpful Tip"
+            content="Use the 'Notes' section to mention things like activity, stress, or diet. This helps you and your doctor understand what affects your readings."
+           />
         </div>
         <div className="lg:col-span-3 space-y-6">
           <Card>

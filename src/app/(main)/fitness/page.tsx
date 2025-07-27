@@ -10,10 +10,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, Lightbulb } from 'lucide-react';
 import { placeholderExercises } from '@/lib/placeholder-data';
 import type { ActivityLog } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
+import { HealthTip } from '@/components/health-tip';
 
 export default function FitnessPage() {
     const { toast } = useToast();
@@ -130,6 +131,11 @@ export default function FitnessPage() {
               </Table>
             </CardContent>
           </Card>
+           <HealthTip
+            icon={Lightbulb}
+            title="Helpful Tip"
+            content="Consistency is key! Even 15 minutes of gentle movement each day can make a big difference in your strength, balance, and overall well-being."
+           />
         </div>
       </div>
     </div>

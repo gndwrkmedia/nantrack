@@ -15,6 +15,13 @@ export interface Recipe {
   };
 }
 
+export interface MealLog {
+    id: string;
+    recipeName: string;
+    category: 'Breakfast' | 'Lunch' | 'Dinner' | 'Snacks';
+    timestamp: Date;
+}
+
 export interface Exercise {
   id: string;
   name: string;

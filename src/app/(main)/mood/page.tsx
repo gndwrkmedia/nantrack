@@ -12,6 +12,8 @@ import { placeholderMoodLog } from '@/lib/placeholder-data';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import type { MoodLog } from '@/lib/types';
+import { HealthTip } from '@/components/health-tip';
+import { Lightbulb } from 'lucide-react';
 
 const moodOptions = [
   { level: 1, emoji: '😞', label: 'Very Sad' },
@@ -96,6 +98,11 @@ export default function MoodPage() {
               <Button size="lg" className="w-full text-lg h-12" onClick={handleSave}>Save Entry</Button>
             </CardContent>
           </Card>
+           <HealthTip
+            icon={Lightbulb}
+            title="Helpful Tip"
+            content="Don't be afraid to write down your thoughts, both good and bad. Journaling is a wonderful way to understand your feelings and see how they connect to your health."
+           />
         </div>
 
         <div className="lg:col-span-2 space-y-6">

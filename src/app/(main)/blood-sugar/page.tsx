@@ -17,6 +17,8 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { placeholderBsLog, bsDataForChart } from '@/lib/placeholder-data';
 import { useToast } from '@/hooks/use-toast';
 import type { BloodSugarLog } from '@/lib/types';
+import { HealthTip } from '@/components/health-tip';
+import { Lightbulb } from 'lucide-react';
 
 const bsFormSchema = z.object({
   level: z.coerce.number().min(20, "Value must be at least 20").max(600, "Value must be less than 600"),
@@ -116,6 +118,11 @@ export default function BloodSugarPage() {
               </Form>
             </CardContent>
           </Card>
+          <HealthTip
+            icon={Lightbulb}
+            title="Helpful Tip"
+            content="Logging your blood sugar around meals helps you see how different foods affect your levels. 'Fasting' means your first reading of the day before eating."
+           />
         </div>
         <div className="lg:col-span-3 space-y-6">
           <Card>

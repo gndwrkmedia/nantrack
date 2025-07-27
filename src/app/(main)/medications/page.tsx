@@ -8,13 +8,14 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { CheckCircle, PlusCircle, Timer, Pill } from 'lucide-react';
+import { CheckCircle, PlusCircle, Timer, Pill, Lightbulb } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { placeholderMedications } from '@/lib/placeholder-data';
 import type { Medication, MedicationLog } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { HealthTip } from '@/components/health-tip';
 
 // Helper to format remaining time
 const formatTimeLeft = (ms: number) => {
@@ -173,7 +174,12 @@ export default function MedicationsPage() {
         })}
       </div>
 
-       <div className="mt-6">
+       <div className="mt-6 space-y-6">
+        <HealthTip
+            icon={Lightbulb}
+            title="Helpful Tip"
+            content="If you add a new medication, be sure to enter the time between doses (in hours) correctly so the countdown timer is accurate."
+           />
         <Card>
             <CardHeader>
               <CardTitle>Medication History</CardTitle>

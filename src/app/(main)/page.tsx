@@ -12,12 +12,13 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/page-header';
-import { HeartPulse, Droplets, Pill, Smile, UtensilsCrossed, Bike, Settings, HelpCircle } from 'lucide-react';
+import { HeartPulse, Droplets, Pill, Smile, UtensilsCrossed, Bike, Settings, HelpCircle, Lightbulb } from 'lucide-react';
 import { bpDataForChart, bsDataForChart } from '@/lib/placeholder-data';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from '@/components/ui/chart';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Logo } from '@/components/logo';
 import { cn } from '@/lib/utils';
+import { HealthTip } from '@/components/health-tip';
 
 
 const bpChartConfig = {
@@ -171,7 +172,7 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
 
-         <Card className="flex flex-col transition-all duration-200 hover:shadow-lg hover:-translate-y-1">
+         <Card className="lg:col-span-1 transition-all duration-200 hover:shadow-lg hover:-translate-y-1">
           <CardHeader>
             <CardTitle className="flex items-center gap-3 text-2xl">
               <UtensilsCrossed className="h-8 w-8 text-primary" />
@@ -194,6 +195,13 @@ export default function DashboardPage() {
             </div>
           </CardContent>
         </Card>
+      </div>
+      <div className="mt-6">
+        <HealthTip 
+            icon={Lightbulb}
+            title="Today's Tip"
+            content="Consistency is more important than perfection. Just logging one thing today is a step in the right direction. You're doing great!"
+        />
       </div>
     </div>
   );
