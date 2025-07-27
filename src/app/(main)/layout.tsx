@@ -17,7 +17,7 @@ import {
   SidebarSeparator,
 } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
-import { LayoutDashboard, HeartPulse, Droplets, Pill, Bike, UtensilsCrossed, Smile, Settings } from 'lucide-react';
+import { LayoutDashboard, HeartPulse, Droplets, Pill, Bike, UtensilsCrossed, Smile, Settings, HelpCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
@@ -30,7 +30,10 @@ const navItems = [
   { href: '/mood', label: 'Mood', icon: Smile },
 ];
 
-const settingsItem = { href: '/settings', label: 'Settings', icon: Settings };
+const bottomNavItems = [
+    { href: '/help', label: 'Help & About', icon: HelpCircle },
+    { href: '/settings', label: 'Settings', icon: Settings }
+];
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -69,20 +72,22 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         <SidebarFooter>
             <SidebarSeparator />
             <SidebarMenu>
-                 <SidebarMenuItem>
-                    <SidebarMenuButton
-                        asChild
-                        variant="default"
-                        className="text-lg py-6"
-                        isActive={pathname === settingsItem.href}
-                        tooltip={{ children: settingsItem.label, side: 'right' }}
-                    >
-                        <Link href={settingsItem.href}>
-                            <settingsItem.icon className="h-6 w-6" />
-                            <span className="group-data-[collapsible=icon]:hidden">{settingsItem.label}</span>
-                        </Link>
-                    </SidebarMenuButton>
-                 </SidebarMenuItem>
+                 {bottomNavItems.map((item) => (
+                    <SidebarMenuItem key={item.href}>
+                        <SidebarMenuButton
+                            asChild
+                            variant="default"
+                            className="text-lg py-6"
+                            isActive={pathname === item.href}
+                            tooltip={{ children: item.label, side: 'right' }}
+                        >
+                            <Link href={item.href}>
+                                <item.icon className="h-6 w-6" />
+                                <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                 ))}
             </SidebarMenu>
         </SidebarFooter>
       </Sidebar>

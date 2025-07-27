@@ -31,6 +31,14 @@ export interface Medication {
     intervalHours: number; // New: hours until next dose is due
 }
 
+export interface MedicationLog {
+    id: string;
+    medicationId: string;
+    medicationName: string;
+    dosage: string;
+    timestamp: Date;
+}
+
 export interface BloodPressureLog {
     id:string;
     systolic: number;

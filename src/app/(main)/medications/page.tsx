@@ -10,8 +10,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { CheckCircle, PlusCircle, Timer, Pill } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { placeholderMedications } from '@/lib/placeholder-data';
-import type { Medication } from '@/lib/types';
+import type { Medication, MedicationLog } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
@@ -34,6 +35,8 @@ export default function MedicationsPage() {
   
   // Store the time remaining for each med
   const [timeLeft, setTimeLeft] = useState<Record<string, number>>({});
+  
+  const [medicationTakenLog, setMedicationTakenLog] = useState<MedicationLog[]>([]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -52,12 +55,21 @@ export default function MedicationsPage() {
     return () => clearInterval(interval);
   }, [takenLog, meds]);
 
-  const handleTakeMed = (medId: string) => {
-    setTakenLog(prev => ({ ...prev, [medId]: Date.now() }));
-    const med = meds.find(m => m.id === medId);
+  const handleTakeMed = (med: Medication) => {
+    setTakenLog(prev => ({ ...prev, [med.id]: Date.now() }));
+    
+    const newLogEntry: MedicationLog = {
+        id: `mlog-${Date.now()}`,
+        medicationId: med.id,
+        medicationName: med.name,
+        dosage: med.dosage,
+        timestamp: new Date(),
+    };
+    setMedicationTakenLog(prev => [newLogEntry, ...prev]);
+
     toast({
       title: "Medication Logged!",
-      description: `You've marked ${med?.name} as taken. Great job!`,
+      description: `You've marked ${med.name} as taken. Great job!`,
     });
   };
 
@@ -140,7 +152,7 @@ export default function MedicationsPage() {
                 <Button 
                   size="lg" 
                   className="w-full text-lg h-12"
-                  onClick={() => handleTakeMed(med.id)}
+                  onClick={() => handleTakeMed(med)}
                   disabled={!isReady}
                 >
                   {isReady ? (
@@ -159,6 +171,44 @@ export default function MedicationsPage() {
             </Card>
           );
         })}
+      </div>
+
+       <div className="mt-6">
+        <Card>
+            <CardHeader>
+              <CardTitle>Medication History</CardTitle>
+              <CardDescription>A log of all the medications you've taken.</CardDescription>
+            </CardHeader>
+            <CardContent>
+               <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-base">Date & Time</TableHead>
+                    <TableHead className="text-base">Medication</TableHead>
+                    <TableHead className="text-base">Dosage</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {medicationTakenLog.length === 0 && (
+                        <TableRow>
+                            <TableCell colSpan={3} className="text-center text-lg text-muted-foreground h-24">
+                                You haven't logged any medications yet.
+                            </TableCell>
+                        </TableRow>
+                    )}
+                    {medicationTakenLog.map((log) => (
+                        <TableRow key={log.id}>
+                            <TableCell className="text-base">
+                                {log.timestamp.toLocaleDateString()} at {log.timestamp.toLocaleTimeString()}
+                            </TableCell>
+                            <TableCell className="text-base font-medium">{log.medicationName}</TableCell>
+                            <TableCell className="text-base">{log.dosage}</TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
       </div>
     </div>
   );
