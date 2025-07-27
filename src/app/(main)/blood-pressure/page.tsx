@@ -57,11 +57,19 @@ export default function BloodPressurePage() {
       setTipLoading(true);
       try {
         const latestReading = placeholderBpLog[0];
-        const historicalData = bpDataForChart.map(d => ({systolic: d.systolic, diastolic: d.diastolic}));
+        const historicalData = placeholderBpLog.map(d => ({
+            systolic: d.systolic, 
+            diastolic: d.diastolic, 
+            timestamp: d.timestamp.toISOString()
+        }));
 
         const response = await generateHealthTip({
           readingType: 'bloodPressure',
-          currentReading: { systolic: latestReading.systolic, diastolic: latestReading.diastolic },
+          currentReading: { 
+              systolic: latestReading.systolic, 
+              diastolic: latestReading.diastolic, 
+              timestamp: latestReading.timestamp.toISOString() 
+          },
           historicalData: historicalData,
         });
         if (response.tip) {

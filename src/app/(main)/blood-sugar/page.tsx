@@ -51,11 +51,17 @@ export default function BloodSugarPage() {
       setTipLoading(true);
       try {
         const latestReading = placeholderBsLog[0];
-        const historicalData = bsDataForChart.map(d => ({level: d.level}));
+        const historicalData = placeholderBsLog.map(d => ({
+            level: d.level, 
+            timestamp: d.timestamp.toISOString()
+        }));
 
         const response = await generateHealthTip({
           readingType: 'bloodSugar',
-          currentReading: { level: latestReading.level },
+          currentReading: { 
+              level: latestReading.level,
+              timestamp: latestReading.timestamp.toISOString() 
+            },
           historicalData: historicalData,
         });
         if (response.tip) {
