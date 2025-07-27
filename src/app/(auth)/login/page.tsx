@@ -52,10 +52,6 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       await login(values.email, values.password);
-      toast({
-        title: 'Login Successful',
-        description: "Welcome back! Redirecting you to your dashboard.",
-      });
       router.push('/dashboard');
     } catch (error: any) {
       toast({

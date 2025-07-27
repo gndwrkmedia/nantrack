@@ -54,10 +54,6 @@ export default function RegisterPage() {
     setIsLoading(true);
     try {
       await register(values.email, values.password, values.name);
-      toast({
-        title: 'Registration Successful',
-        description: "Your account has been created. Redirecting you to the dashboard.",
-      });
       router.push('/dashboard');
     } catch (error: any) {
       toast({

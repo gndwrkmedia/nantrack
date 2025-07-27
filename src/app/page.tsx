@@ -4,8 +4,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/use-auth';
-import { Skeleton } from '@/components/ui/skeleton';
-
+import { Logo } from '@/components/logo';
 
 export default function RootPage() {
   const router = useRouter();
@@ -22,12 +21,10 @@ export default function RootPage() {
   }, [user, loading, router]);
 
   return (
-    <div className="flex h-screen w-screen items-center justify-center">
-      <div className="flex flex-col items-center gap-4">
-        <Skeleton className="h-16 w-16 rounded-full" />
-        <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-6 w-32" />
-      </div>
+    <div className="flex h-screen w-screen items-center justify-center bg-background">
+        <div className="flex h-screen items-center justify-center">
+            <Logo className="h-24 w-24" />
+        </div>
     </div>
   );
 }
