@@ -11,7 +11,17 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/page-header';
-import { HeartPulse, Droplets, Pill, Smile, Lightbulb, GlassWater } from 'lucide-react';
+import { HeartPulse, Droplets, Pill, Smile, Lightbulb, GlassWater, Bike, UtensilsCrossed } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+const mobileNavItems = [
+  { href: '/blood-pressure', label: 'BP', icon: HeartPulse },
+  { href: '/blood-sugar', label: 'Sugar', icon: Droplets },
+  { href: '/medications', label: 'Meds', icon: Pill },
+  { href: '/fitness', label: 'Fitness', icon: Bike },
+  { href: '/nutrition', label: 'Meals', icon: UtensilsCrossed },
+  { href: '/mood', label: 'Mood', icon: Smile },
+]
 
 export default function DashboardPage() {
   const [date, setDate] = React.useState<Date | undefined>(new Date());
@@ -30,6 +40,18 @@ export default function DashboardPage() {
         title={`${getGreeting()}, Grandma!`}
         description={`Here's your health summary for ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}.`}
       />
+
+      <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-6 md:hidden">
+        {mobileNavItems.map(item => (
+          <Link href={item.href} key={item.href} passHref>
+            <Button variant="outline" className="w-full h-20 flex-col gap-2">
+              <item.icon className="h-7 w-7 text-primary" />
+              <span className="text-sm font-semibold">{item.label}</span>
+            </Button>
+          </Link>
+        ))}
+      </div>
+
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <Card className="flex flex-col">
           <CardHeader>
