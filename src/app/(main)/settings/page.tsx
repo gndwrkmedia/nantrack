@@ -246,4 +246,6 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
       </div>
-    
+    </div>
+  );
+}

@@ -26,4 +26,8 @@ export default function RootPage() {
       <div className="flex flex-col items-center gap-4">
         <Skeleton className="h-16 w-16 rounded-full" />
         <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-6 w-3
+        <Skeleton className="h-6 w-32" />
+      </div>
+    </div>
+  );
+}

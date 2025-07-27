@@ -26,4 +26,9 @@ export default function RootLayout({
       <body className={cn("font-body antialiased", inter.variable)}>
         <AuthProvider>
             {children}
+            <Toaster />
         </AuthProvider>
+      </body>
+    </html>
+  );
+}

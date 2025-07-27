@@ -291,3 +291,9 @@ export default function MedicationsPage() {
                     ))}
                 </TableBody>
               </Table>
+            </CardContent>
+          </Card>
+      </div>
+    </div>
+  );
+}

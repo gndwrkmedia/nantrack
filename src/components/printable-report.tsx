@@ -136,4 +136,4 @@ export const PrintableReport = React.forwardRef<HTMLDivElement, PrintableReportP
     );
 });
 
-PrintableReport.displayName = "Print
+PrintableReport.displayName = "PrintableReport";
