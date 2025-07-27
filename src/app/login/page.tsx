@@ -89,6 +89,7 @@ export default function LoginPage() {
                       <Input
                         className="h-12 text-base"
                         placeholder="nan.nan@email.com"
+                        autoComplete="email"
                         {...field}
                       />
                     </FormControl>
@@ -107,6 +108,7 @@ export default function LoginPage() {
                         className="h-12 text-base"
                         type="password"
                         placeholder="••••••••"
+                        autoComplete="current-password"
                         {...field}
                       />
                     </FormControl>

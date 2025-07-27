@@ -91,6 +91,7 @@ export default function RegisterPage() {
                       <Input
                         className="h-12 text-base"
                         placeholder="e.g., Jane Doe"
+                        autoComplete="name"
                         {...field}
                       />
                     </FormControl>
@@ -108,6 +109,7 @@ export default function RegisterPage() {
                       <Input
                         className="h-12 text-base"
                         placeholder="you@email.com"
+                        autoComplete="email"
                         {...field}
                       />
                     </FormControl>
@@ -126,6 +128,7 @@ export default function RegisterPage() {
                         className="h-12 text-base"
                         type="password"
                         placeholder="••••••••"
+                        autoComplete="new-password"
                         {...field}
                       />
                     </FormControl>

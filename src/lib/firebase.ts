@@ -18,11 +18,12 @@ export const getFirebaseApp = (): FirebaseApp | null => {
         return null;
     }
 
+    if (!firebaseConfig.apiKey) {
+        console.error("Firebase API key is missing. Make sure to set NEXT_PUBLIC_FIREBASE_API_KEY in your environment variables.");
+        return null;
+    }
+
     if (!getApps().length) {
-        if (!firebaseConfig.apiKey) {
-            console.error("Firebase API key is missing. Make sure to set NEXT_PUBLIC_FIREBASE_API_KEY in your environment variables.");
-            return null;
-        }
         try {
             firebaseApp = initializeApp(firebaseConfig);
         } catch (e) {
