@@ -25,11 +25,9 @@ import { useToast } from "@/hooks/use-toast";
 import { Trash2, FileDown } from 'lucide-react';
 import { PrintableReport } from '@/components/printable-report';
 import { placeholderBpLog, placeholderBsLog, placeholderMedications, placeholderMoodLog } from '@/lib/placeholder-data';
-import { useAuth } from '@/hooks/use-auth';
 
 export default function SettingsPage() {
   const { toast } = useToast();
-  const { user } = useAuth();
   const reportRef = useRef<HTMLDivElement>(null);
   const [isExporting, setIsExporting] = useState(false);
 
@@ -152,7 +150,7 @@ export default function SettingsPage() {
                 medications: placeholderMedications,
                 moodLog: placeholderMoodLog,
                 activityLog: [], // Assuming activity log is not in placeholder data
-                user: { name: user?.displayName || 'User' }
+                user: { name: 'Nan-Nan' }
             }}
         />
       </div>
@@ -166,11 +164,11 @@ export default function SettingsPage() {
           <CardContent className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="name" className="text-base">Name</Label>
-              <Input id="name" defaultValue={user?.displayName || ''} className="text-lg h-12"/>
+              <Input id="name" defaultValue="Nan-Nan" className="text-lg h-12"/>
             </div>
              <div className="space-y-2">
               <Label htmlFor="email" className="text-base">Email Address</Label>
-              <Input id="email" type="email" defaultValue={user?.email || ''} className="text-lg h-12" readOnly/>
+              <Input id="email" type="email" defaultValue="nan.nan@email.com" className="text-lg h-12" readOnly/>
             </div>
             <Button size="lg" className="text-lg h-12">Save Changes</Button>
           </CardContent>
@@ -250,4 +248,3 @@ export default function SettingsPage() {
     </div>
   );
 }
-

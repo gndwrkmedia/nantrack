@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -9,7 +9,6 @@ import { ArrowRight, Lightbulb, HeartPulse, Droplets, Pill, Smile } from 'lucide
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from '@/components/ui/chart';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { bpDataForChart, bsDataForChart, placeholderMedications } from '@/lib/placeholder-data';
-import { useAuth } from '@/hooks/use-auth';
 import { HealthTip } from '@/components/health-tip';
 
 const bpChartConfig = {
@@ -36,7 +35,6 @@ const moodChartConfig = {
 } satisfies ChartConfig;
 
 export default function DashboardPage() {
-  const { user } = useAuth();
   const nextMed = placeholderMedications[0];
 
   const getGreeting = () => {
@@ -49,7 +47,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title={`${getGreeting()}, ${user?.displayName || 'there'}!`}
+        title={`${getGreeting()}, Nan-Nan!`}
         description="Here’s a quick look at your health today."
       />
 

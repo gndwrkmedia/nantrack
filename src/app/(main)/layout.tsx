@@ -3,7 +3,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import {
   SidebarProvider,
   Sidebar,
@@ -18,7 +18,6 @@ import {
 } from '@/components/ui/sidebar';
 import { Logo } from '@/components/logo';
 import { LayoutDashboard, HeartPulse, Droplets, Pill, Bike, UtensilsCrossed, Smile, Settings, HelpCircle, LogOut } from 'lucide-react';
-import { useAuth } from '@/hooks/use-auth';
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -37,27 +36,6 @@ const bottomNavItems = [
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { user, loading, logout } = useAuth();
-  const router = useRouter();
-
-   React.useEffect(() => {
-    if (!loading && !user) {
-      router.replace('/login');
-    }
-  }, [user, loading, router]);
-
-  if (loading || !user) {
-    return (
-        <div className="flex h-screen items-center justify-center">
-            <Logo className="w-24 h-24" />
-        </div>
-    );
-  }
-
-  const handleLogout = async () => {
-    await logout();
-    router.push('/login');
-  };
 
   return (
     <SidebarProvider>
@@ -109,17 +87,6 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                  ))}
-                 <SidebarMenuItem>
-                    <SidebarMenuButton
-                        variant="default"
-                        className="text-lg py-6"
-                        tooltip={{ children: 'Logout', side: 'right' }}
-                        onClick={handleLogout}
-                    >
-                        <LogOut className="h-6 w-6" />
-                        <span className="group-data-[collapsible=icon]:hidden">Logout</span>
-                    </SidebarMenuButton>
-                 </SidebarMenuItem>
             </SidebarMenu>
         </SidebarFooter>
       </Sidebar>
