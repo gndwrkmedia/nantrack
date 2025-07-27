@@ -44,8 +44,8 @@ export default function DashboardPage() {
       <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-6 md:hidden">
         {mobileNavItems.map(item => (
           <Link href={item.href} key={item.href} passHref>
-            <Button variant="outline" className="w-full h-20 flex-col gap-2">
-              <item.icon className="h-7 w-7 text-primary" />
+            <Button variant="default" className="w-full h-20 flex-col gap-2">
+              <item.icon className="h-7 w-7" />
               <span className="text-sm font-semibold">{item.label}</span>
             </Button>
           </Link>
