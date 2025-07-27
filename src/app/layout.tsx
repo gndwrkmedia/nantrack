@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
@@ -11,7 +12,7 @@ const ptSans = PT_Sans({
 })
 
 export const metadata: Metadata = {
-  title: 'Golden Health',
+  title: 'Nan-Track',
   description: 'A senior-friendly health management tool for tracking health, fitness, and nutrition.',
 };
 

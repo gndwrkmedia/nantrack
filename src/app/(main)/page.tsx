@@ -61,7 +61,7 @@ export default function DashboardPage() {
   return (
     <div className="w-full">
       <PageHeader
-        title={`${greeting}, Grandma!`}
+        title={`${greeting}, Nan-Nan!`}
         description={`Here's your health summary for ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}.`}
       />
 

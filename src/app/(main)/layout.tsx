@@ -42,7 +42,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
           <Link href="/" className="flex items-center gap-3">
             <Logo className="w-10 h-10" />
             <span className="font-headline text-2xl font-bold text-foreground/90 group-data-[collapsible=icon]:hidden">
-              Golden Health
+              Nan-Track
             </span>
           </Link>
         </SidebarHeader>
