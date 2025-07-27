@@ -50,14 +50,17 @@ const bsChartConfig = {
 export default function DashboardPage() {
   const [dailyTip, setDailyTip] = useState('');
   const [tipLoading, setTipLoading] = useState(true);
+  const [greeting, setGreeting] = useState('');
 
-  // A friendly greeting based on the time of day
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return "Good Morning";
-    if (hour < 18) return "Good Afternoon";
-    return "Good Evening";
-  };
+  useEffect(() => {
+    const getGreeting = () => {
+        const hour = new Date().getHours();
+        if (hour < 12) return "Good Morning";
+        if (hour < 18) return "Good Afternoon";
+        return "Good Evening";
+    };
+    setGreeting(getGreeting());
+  }, []);
 
   useEffect(() => {
     const fetchTip = async () => {
@@ -116,7 +119,7 @@ export default function DashboardPage() {
   return (
     <div className="w-full">
       <PageHeader
-        title={`${getGreeting()}, Grandma!`}
+        title={`${greeting}, Grandma!`}
         description={`Here's your health summary for ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}.`}
       />
 
