@@ -2,6 +2,8 @@
 'use client';
 
 import React from 'react';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import { PageHeader } from '@/components/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -20,7 +22,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Trash2 } from 'lucide-react';
+import { Trash2, FileDown } from 'lucide-react';
 
 export default function SettingsPage() {
   const { toast } = useToast();
@@ -33,6 +35,31 @@ export default function SettingsPage() {
       title: "Demo Data Cleared",
       description: "All blood pressure, blood sugar, fitness, and mood logs have been removed.",
     });
+  };
+
+  const handleExportPdf = () => {
+    // This is a placeholder function. In a real app, this would be much more complex.
+    // It would involve gathering data from all over the app, probably from a global state or context,
+    // then formatting it into a hidden div, which would then be rendered to PDF.
+    
+    toast({
+      title: "Generating PDF...",
+      description: "This feature is for demonstration purposes. A full implementation would gather all logs and charts.",
+    });
+    
+    const doc = new jsPDF();
+    doc.text("Nan-Track Health Report", 20, 20);
+    doc.text("Generated on: " + new Date().toLocaleDateString(), 20, 30);
+    doc.text("This is a sample report.", 20, 40);
+    
+    // In a real implementation, you would loop through data and add it to the PDF.
+    // For example:
+    // doc.text("Blood Pressure Log:", 20, 50);
+    // placeholderBpLog.forEach((log, index) => {
+    //   doc.text(`${log.timestamp.toLocaleDateString()}: ${log.systolic}/${log.diastolic}`, 20, 60 + (index * 10));
+    // });
+    
+    doc.save("Nan-Track_Health_Report.pdf");
   };
 
   return (
@@ -90,10 +117,14 @@ export default function SettingsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-destructive">Data Management</CardTitle>
-            <CardDescription>Permanently remove your logged data.</CardDescription>
+            <CardTitle>Data Management</CardTitle>
+            <CardDescription>Export or permanently remove your logged data.</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="grid gap-4 sm:grid-cols-2">
+            <Button variant="outline" size="lg" className="text-lg h-12 w-full" onClick={handleExportPdf}>
+                <FileDown className="mr-2 h-5 w-5" />
+                Export Health Report (PDF)
+            </Button>
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button variant="destructive" size="lg" className="text-lg h-12 w-full">

@@ -65,46 +65,40 @@ export default function HelpPage() {
         title="Help & About"
         description="Your guide to using the Nan-Track application."
       />
+      <div className="max-w-4xl mx-auto">
+        <Card>
+            <CardHeader>
+                <CardTitle>How to Use This App</CardTitle>
+                <CardDescription>Click on a section below to learn more about it.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <Accordion type="single" collapsible className="w-full">
+                    {helpSections.map((section) => (
+                    <AccordionItem value={section.id} key={section.id}>
+                        <AccordionTrigger className="text-xl font-headline hover:no-underline">
+                            <section.icon className="mr-4 h-6 w-6 text-primary" />
+                            {section.title}
+                        </AccordionTrigger>
+                        <AccordionContent className="space-y-4 px-2">
+                            <p className="text-lg text-muted-foreground">{section.content}</p>
+                        </AccordionContent>
+                    </AccordionItem>
+                    ))}
+                </Accordion>
 
-      <div className="grid gap-6 md:grid-cols-3">
-        <div className="md:col-span-2 space-y-6">
-            <Card>
-                <CardHeader>
-                    <CardTitle>How to Use This App</CardTitle>
-                    <CardDescription>Click on a section below to learn more about it.</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Accordion type="single" collapsible className="w-full">
-                        {helpSections.map((section) => (
-                        <AccordionItem value={section.id} key={section.id}>
-                            <AccordionTrigger className="text-xl font-headline hover:no-underline">
-                                <section.icon className="mr-4 h-6 w-6 text-primary" />
-                                {section.title}
-                            </AccordionTrigger>
-                            <AccordionContent className="space-y-4 px-2">
-                                <p className="text-lg text-muted-foreground">{section.content}</p>
-                            </AccordionContent>
-                        </AccordionItem>
-                        ))}
-                    </Accordion>
-                </CardContent>
-            </Card>
-        </div>
-        <div className="space-y-6">
-            <Card>
-                <CardHeader>
-                    <CardTitle>About Nan-Track</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4 text-base text-muted-foreground">
-                    <p>
-                        This application was designed with love to provide a simple, friendly, and effective way for seniors to monitor their key health metrics.
-                    </p>
-                    <p>
-                        Our goal is to empower users to take an active role in their health management by making it easy to track vitals, medications, physical activity, and overall well-being in one convenient place.
-                    </p>
-                </CardContent>
-            </Card>
-        </div>
+                <div className="mt-8 pt-6 border-t">
+                    <h3 className="text-2xl font-headline mb-4 text-center">About Nan-Track</h3>
+                    <div className="space-y-4 text-lg text-muted-foreground text-center max-w-2xl mx-auto">
+                        <p>
+                            This application was built with love, especially for my Nan-Nan.
+                        </p>
+                        <p>
+                            The goal was to create a simple, beautiful, and private place for her to easily keep track of her health—from blood sugar and blood pressure to daily moods and activities. It’s designed to be a helpful companion on her health journey, making it easier to see her progress and share it with her family and doctors.
+                        </p>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
       </div>
     </div>
   );
