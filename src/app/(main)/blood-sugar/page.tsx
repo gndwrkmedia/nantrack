@@ -16,7 +16,6 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from '
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { placeholderBsLog, bsDataForChart } from '@/lib/placeholder-data';
 import { useToast } from '@/hooks/use-toast';
-import { generateHealthTip } from '@/ai/flows/generate-health-tips-flow';
 import { Lightbulb } from 'lucide-react';
 
 const bsFormSchema = z.object({
@@ -56,16 +55,30 @@ export default function BloodSugarPage() {
             timestamp: d.timestamp.toISOString()
         }));
 
-        const response = await generateHealthTip({
-          readingType: 'bloodSugar',
-          currentReading: { 
-              level: latestReading.level,
-              timestamp: latestReading.timestamp.toISOString() 
-            },
-          historicalData: historicalData,
+        const response = await fetch('/api/generate-tip', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            flow: 'generateHealthTip',
+            input: {
+              readingType: 'bloodSugar',
+              currentReading: { 
+                  level: latestReading.level,
+                  timestamp: latestReading.timestamp.toISOString() 
+                },
+              historicalData: historicalData,
+            }
+          })
         });
-        if (response.tip) {
-          setHealthTip(response.tip);
+
+        if (!response.ok) {
+            throw new Error(`API call failed with status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+
+        if (result.tip) {
+          setHealthTip(result.tip);
         }
       } catch (error) {
         console.error("Error generating health tip:", error);

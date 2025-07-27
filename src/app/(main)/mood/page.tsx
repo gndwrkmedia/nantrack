@@ -13,7 +13,6 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import type { MoodLog } from '@/lib/types';
 import { Lightbulb } from 'lucide-react';
-import { generateLifestyleTip } from '@/ai/flows/generate-lifestyle-tips-flow';
 
 const moodOptions = [
   { level: 1, emoji: '😞', label: 'Very Sad' },
@@ -59,14 +58,25 @@ export default function MoodPage() {
     const fetchTip = async () => {
       setTipLoading(true);
       try {
-        const response = await generateLifestyleTip({
-          tipType: 'mood',
-          moodData: { 
-            moodLog: moodLog.map(log => ({...log, journalEntry: log.journalEntry || "", timestamp: log.timestamp.toISOString()}))
-          },
+        const response = await fetch('/api/generate-tip', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            flow: 'generateLifestyleTip',
+            input: {
+              tipType: 'mood',
+              moodData: { 
+                moodLog: moodLog.map(log => ({...log, journalEntry: log.journalEntry || "", timestamp: log.timestamp.toISOString()}))
+              },
+            }
+          })
         });
-        if (response.tip) {
-          setHealthTip(response.tip);
+        if (!response.ok) {
+          throw new Error(`API call failed with status: ${response.status}`);
+        }
+        const result = await response.json();
+        if (result.tip) {
+          setHealthTip(result.tip);
         }
       } catch (error) {
         console.error("Error generating mood tip:", error);

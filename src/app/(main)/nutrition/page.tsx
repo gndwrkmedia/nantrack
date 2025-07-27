@@ -11,7 +11,6 @@ import { placeholderRecipes } from '@/lib/placeholder-data';
 import type { Recipe } from '@/lib/types';
 import { Minus, Plus, GlassWater, Lightbulb } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { generateLifestyleTip } from '@/ai/flows/generate-lifestyle-tips-flow';
 
 export default function NutritionPage() {
   const { toast } = useToast();
@@ -30,12 +29,25 @@ export default function NutritionPage() {
     const fetchTip = async () => {
       setTipLoading(true);
       try {
-        const response = await generateLifestyleTip({
-          tipType: 'nutrition',
-          nutritionData: { waterCount },
+        const response = await fetch('/api/generate-tip', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            flow: 'generateLifestyleTip',
+            input: {
+              tipType: 'nutrition',
+              nutritionData: { waterCount },
+            }
+          })
         });
-        if (response.tip) {
-          setHealthTip(response.tip);
+
+        if (!response.ok) {
+          throw new Error(`API call failed with status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        if (result.tip) {
+          setHealthTip(result.tip);
         }
       } catch (error) {
         console.error("Error generating nutrition tip:", error);

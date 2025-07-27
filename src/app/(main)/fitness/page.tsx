@@ -14,7 +14,6 @@ import { Clock, PlusCircle, Lightbulb } from 'lucide-react';
 import { placeholderExercises } from '@/lib/placeholder-data';
 import type { ActivityLog } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
-import { generateLifestyleTip } from '@/ai/flows/generate-lifestyle-tips-flow';
 
 export default function FitnessPage() {
     const { toast } = useToast();
@@ -43,14 +42,25 @@ export default function FitnessPage() {
         const fetchTip = async () => {
           setTipLoading(true);
           try {
-            const response = await generateLifestyleTip({
-              tipType: 'fitness',
-              fitnessData: {
-                activityLog: activityLog.map(log => ({...log, timestamp: log.timestamp.toISOString()}))
-              }
+             const response = await fetch('/api/generate-tip', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                flow: 'generateLifestyleTip',
+                input: {
+                  tipType: 'fitness',
+                  fitnessData: {
+                    activityLog: activityLog.map(log => ({...log, timestamp: log.timestamp.toISOString()}))
+                  }
+                }
+              })
             });
-            if (response.tip) {
-              setHealthTip(response.tip);
+            if (!response.ok) {
+              throw new Error(`API call failed with status: ${response.status}`);
+            }
+            const result = await response.json();
+            if (result.tip) {
+              setHealthTip(result.tip);
             }
           } catch (error) {
             console.error("Error generating fitness tip:", error);

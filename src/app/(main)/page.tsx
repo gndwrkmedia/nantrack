@@ -13,7 +13,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/page-header';
 import { HeartPulse, Droplets, Pill, Smile, Lightbulb, Bike, UtensilsCrossed } from 'lucide-react';
-import { generateDailySummaryTip } from '@/ai/flows/generate-daily-summary-tip-flow';
 import { placeholderBpLog, placeholderBsLog, placeholderMoodLog, bpDataForChart, bsDataForChart } from '@/lib/placeholder-data';
 import type { ActivityLog } from '@/lib/types';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from '@/components/ui/chart';
@@ -79,32 +78,46 @@ export default function DashboardPage() {
         
         const moodData = placeholderMoodLog.map(log => ({...log, journalEntry: log.journalEntry || '', timestamp: log.timestamp.toISOString()}));
 
-        // In a real app, this would be fetched from a database
         const activityLog: ActivityLog[] = []; 
         const waterCount = 3;
 
-        const response = await generateDailySummaryTip({
-          bloodPressure: {
-            currentReading: bpData[0],
-            historicalData: bpData,
+        const response = await fetch('/api/generate-tip', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
           },
-          bloodSugar: {
-            currentReading: bsData[0],
-            historicalData: bsData,
-          },
-          fitness: {
-            activityLog: activityLog.map(log => ({...log, timestamp: log.timestamp.toISOString()}))
-          },
-          nutrition: {
-            waterCount: waterCount,
-          },
-          mood: {
-            moodLog: moodData,
-          }
+          body: JSON.stringify({
+            flow: 'generateDailySummaryTip',
+            input: {
+              bloodPressure: {
+                currentReading: bpData[0],
+                historicalData: bpData,
+              },
+              bloodSugar: {
+                currentReading: bsData[0],
+                historicalData: bsData,
+              },
+              fitness: {
+                activityLog: activityLog.map(log => ({...log, timestamp: log.timestamp.toISOString()}))
+              },
+              nutrition: {
+                waterCount: waterCount,
+              },
+              mood: {
+                moodLog: moodData,
+              }
+            }
+          })
         });
 
-        if (response.tip) {
-          setDailyTip(response.tip);
+        if (!response.ok) {
+            throw new Error(`API call failed with status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        
+        if (result.tip) {
+          setDailyTip(result.tip);
         }
       } catch (error) {
         console.error("Error generating daily tip:", error);
