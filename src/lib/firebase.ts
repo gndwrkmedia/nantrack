@@ -8,7 +8,7 @@ export const getFirebaseApp = (): FirebaseApp | null => {
         return null;
     }
 
-    // Rebuild the config inside the function to ensure env vars are available
+    // Rebuild the config inside the function to ensure env vars are available on the client
     const currentFirebaseConfig = {
       apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
       authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -18,7 +18,6 @@ export const getFirebaseApp = (): FirebaseApp | null => {
       appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
       measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
     };
-
 
     if (!currentFirebaseConfig.apiKey) {
         console.error("Firebase API key is missing. Make sure to set NEXT_PUBLIC_FIREBASE_API_KEY in your Vercel environment variables.");

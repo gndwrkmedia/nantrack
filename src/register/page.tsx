@@ -52,7 +52,7 @@ export default function RegisterPage() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    try {.
+    try {
       await register(values.email, values.password, values.name);
       router.push('/dashboard');
     } catch (error: any) {
