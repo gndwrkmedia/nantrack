@@ -16,6 +16,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from '
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { placeholderBpLog, bpDataForChart } from '@/lib/placeholder-data';
 import { useToast } from '@/hooks/use-toast';
+import type { BloodPressureLog } from '@/lib/types';
 
 const bpFormSchema = z.object({
   systolic: z.coerce.number().min(50, "Value must be at least 50").max(300, "Value must be less than 300"),
@@ -38,6 +39,7 @@ const chartConfig = {
 
 export default function BloodPressurePage() {
   const { toast } = useToast();
+  const [bpLog, setBpLog] = React.useState<BloodPressureLog[]>(placeholderBpLog);
 
   const form = useForm<BpFormValues>({
     resolver: zodResolver(bpFormSchema),
@@ -49,7 +51,15 @@ export default function BloodPressurePage() {
   });
 
   function onSubmit(data: BpFormValues) {
-    console.log(data);
+    const newReading: BloodPressureLog = {
+      id: `bp-${Date.now()}`,
+      systolic: data.systolic,
+      diastolic: data.diastolic,
+      notes: data.notes || '',
+      timestamp: new Date(),
+    };
+    setBpLog(prev => [newReading, ...prev]);
+
     toast({
       title: "Success!",
       description: "Your blood pressure reading has been saved.",
@@ -154,7 +164,7 @@ export default function BloodPressurePage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {placeholderBpLog.map((log) => (
+                  {bpLog.map((log) => (
                     <TableRow key={log.id}>
                       <TableCell className="text-base">{log.timestamp.toLocaleDateString()}</TableCell>
                       <TableCell className="text-base font-medium">{log.systolic} / {log.diastolic}</TableCell>

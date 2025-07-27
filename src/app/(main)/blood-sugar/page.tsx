@@ -16,6 +16,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from '
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { placeholderBsLog, bsDataForChart } from '@/lib/placeholder-data';
 import { useToast } from '@/hooks/use-toast';
+import type { BloodSugarLog } from '@/lib/types';
 
 const bsFormSchema = z.object({
   level: z.coerce.number().min(20, "Value must be at least 20").max(600, "Value must be less than 600"),
@@ -33,6 +34,7 @@ const chartConfig = {
 
 export default function BloodSugarPage() {
   const { toast } = useToast();
+  const [bsLog, setBsLog] = React.useState<BloodSugarLog[]>(placeholderBsLog);
 
   const form = useForm<BsFormValues>({
     resolver: zodResolver(bsFormSchema),
@@ -43,7 +45,13 @@ export default function BloodSugarPage() {
   });
 
   function onSubmit(data: BsFormValues) {
-    console.log(data);
+    const newReading: BloodSugarLog = {
+      id: `bs-${Date.now()}`,
+      level: data.level,
+      readingTime: data.readingTime,
+      timestamp: new Date(),
+    };
+    setBsLog(prev => [newReading, ...prev]);
     toast({
       title: "Success!",
       description: "Your blood sugar reading has been saved.",
@@ -144,7 +152,7 @@ export default function BloodSugarPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {placeholderBsLog.map((log) => (
+                  {bsLog.map((log) => (
                     <TableRow key={log.id}>
                       <TableCell className="text-base">{log.timestamp.toLocaleDateString()}</TableCell>
                       <TableCell className="text-base font-medium">{log.level} mg/dL</TableCell>

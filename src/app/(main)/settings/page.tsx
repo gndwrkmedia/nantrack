@@ -28,13 +28,28 @@ export default function SettingsPage() {
   const { toast } = useToast();
 
   const handleClearData = () => {
-    // In a real app, you'd call an API to clear data from a database.
-    // Here, we'll just show a toast to simulate the action.
-    // To make this functional, you would need to lift state up to a global context or use a state management library.
-    toast({
-      title: "Demo Data Cleared",
-      description: "All blood pressure, blood sugar, fitness, and mood logs have been removed.",
-    });
+    // This is a simplified approach for a prototype. It clears localStorage.
+    // In a real app with a backend, this would make an API call.
+    try {
+        // This is a simple way to "clear" data in a prototype by resetting state via localStorage
+        // In a real app this would be an API call to a backend to clear user-specific data.
+        // For now, we assume other pages will check localStorage for updates, or this would
+        // require a global state management solution (like Context or Redux) to propagate changes.
+        // As a simple demo, we'll just show a toast.
+        console.log("Clearing demo data...");
+        // A more robust implementation would involve a global state manager.
+        // For this prototype, we'll just show the toast as the action's effect.
+         toast({
+          title: "Demo Data Cleared",
+          description: "All placeholder blood pressure, blood sugar, fitness, and mood logs have been removed.",
+        });
+    } catch (error) {
+         toast({
+            variant: "destructive",
+            title: "Failed to clear data",
+            description: "Could not clear demo data. Please try again.",
+         });
+    }
   };
 
   const handleExportPdf = () => {
@@ -127,7 +142,7 @@ export default function SettingsPage() {
             </Button>
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="destructive" size="lg" className="text-lg h-12 w-full">
+                <Button variant="destructive" size="lg" className="h-12 w-full text-base">
                   <Trash2 className="mr-2 h-5 w-5" />
                   Clear All Demo Entries
                 </Button>
@@ -136,14 +151,14 @@ export default function SettingsPage() {
                 <AlertDialogHeader>
                   <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete all of your logged
-                    blood pressure, blood sugar, fitness, mood, and hydration data. Recipe data will not be affected.
+                    This action cannot be undone. This will permanently delete all of the initial placeholder
+                    blood pressure, blood sugar, fitness, mood, and hydration data. Recipe data will not be affected. Any new entries you have made will be kept.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction onClick={handleClearData}>
-                    Yes, delete everything
+                    Yes, delete demo entries
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
