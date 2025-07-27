@@ -1,3 +1,4 @@
+
 export interface Recipe {
   id: string;
   name: string;
@@ -27,10 +28,11 @@ export interface Medication {
     dosage: string;
     frequency: string;
     time: string[];
+    intervalHours: number; // New: hours until next dose is due
 }
 
 export interface BloodPressureLog {
-    id: string;
+    id:string;
     systolic: number;
     diastolic: number;
     notes: string;

@@ -1,24 +1,59 @@
+
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { CheckCircle, PlusCircle } from 'lucide-react';
+import { CheckCircle, PlusCircle, Timer, Pill } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
 import { placeholderMedications } from '@/lib/placeholder-data';
 import type { Medication } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
+
+// Helper to format remaining time
+const formatTimeLeft = (ms: number) => {
+  if (ms <= 0) return "Ready to take";
+  const totalSeconds = Math.floor(ms / 1000);
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+};
 
 export default function MedicationsPage() {
   const { toast } = useToast();
   const [meds, setMeds] = useState<Medication[]>(placeholderMedications);
-  const [takenLog, setTakenLog] = useState<Record<string, boolean>>({});
+  
+  // Store the timestamp of when a med was last taken
+  const [takenLog, setTakenLog] = useState<Record<string, number>>({});
+  
+  // Store the time remaining for each med
+  const [timeLeft, setTimeLeft] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const newTimeLeft: Record<string, number> = {};
+      Object.entries(takenLog).forEach(([medId, takenTimestamp]) => {
+        const med = meds.find(m => m.id === medId);
+        if (med) {
+          const nextDoseTime = takenTimestamp + med.intervalHours * 60 * 60 * 1000;
+          const remaining = nextDoseTime - Date.now();
+          newTimeLeft[medId] = Math.max(0, remaining);
+        }
+      });
+      setTimeLeft(newTimeLeft);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [takenLog, meds]);
 
   const handleTakeMed = (medId: string) => {
-    setTakenLog(prev => ({ ...prev, [medId]: true }));
+    setTakenLog(prev => ({ ...prev, [medId]: Date.now() }));
     const med = meds.find(m => m.id === medId);
     toast({
       title: "Medication Logged!",
@@ -67,46 +102,63 @@ export default function MedicationsPage() {
         </Dialog>
       </PageHeader>
 
-      <div className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Your Medication Schedule</CardTitle>
-            <CardDescription>Here are the medications you need to take.</CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {meds.map((med) => (
-              <Card key={med.id} className={takenLog[med.id] ? 'bg-accent/50 border-accent' : ''}>
-                <CardHeader>
-                  <CardTitle className="text-2xl">{med.name}</CardTitle>
-                  <CardDescription className="text-base">{med.dosage}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-lg">
-                    <span className="text-muted-foreground">Frequency: </span>{med.frequency}
-                  </p>
-                  <p className="text-lg">
-                    <span className="text-muted-foreground">Time: </span>{med.time.join(', ')}
-                  </p>
-                  <Button 
-                    size="lg" 
-                    className="w-full text-lg h-12"
-                    onClick={() => handleTakeMed(med.id)}
-                    disabled={takenLog[med.id]}
-                  >
-                    {takenLog[med.id] ? (
-                      <>
-                        <CheckCircle className="mr-2 h-6 w-6" />
-                        Taken
-                      </>
-                    ) : (
-                      "Mark as Taken"
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {meds.map((med) => {
+          const isTaken = takenLog[med.id] !== undefined;
+          const remainingTime = timeLeft[med.id] || 0;
+          const isReady = !isTaken || remainingTime <= 0;
+          const progress = isTaken ? ((med.intervalHours * 3600 * 1000 - remainingTime) / (med.intervalHours * 3600 * 1000)) * 100 : 0;
+
+          return (
+            <Card key={med.id} className={cn("flex flex-col transition-all", !isReady ? 'bg-muted/50' : 'bg-card')}>
+              <CardHeader>
+                  <div className="flex items-center gap-4">
+                    <div className="bg-primary/20 p-3 rounded-full">
+                        <Pill className="h-8 w-8 text-primary" />
+                    </div>
+                    <div>
+                        <CardTitle className="text-2xl">{med.name}</CardTitle>
+                        <CardDescription className="text-base">{med.dosage} &bull; {med.frequency}</CardDescription>
+                    </div>
+                  </div>
+              </CardHeader>
+              <CardContent className="flex-grow flex flex-col justify-between gap-4">
+                <div className="space-y-4">
+                    {isTaken && !isReady && (
+                        <div className="space-y-2 text-center">
+                            <p className="text-muted-foreground">Next dose in:</p>
+                            <p className="font-mono text-3xl font-bold">{formatTimeLeft(remainingTime)}</p>
+                            <Progress value={progress} className="h-3" />
+                        </div>
                     )}
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </CardContent>
-        </Card>
+                    {!isTaken && (
+                        <p className="text-center text-muted-foreground text-lg py-4">
+                            Scheduled for {med.time.join(' & ')}
+                        </p>
+                    )}
+                </div>
+                <Button 
+                  size="lg" 
+                  className="w-full text-lg h-12"
+                  onClick={() => handleTakeMed(med.id)}
+                  disabled={!isReady}
+                >
+                  {isReady ? (
+                    <>
+                      <CheckCircle className="mr-2 h-6 w-6" />
+                      Mark as Taken
+                    </>
+                  ) : (
+                    <>
+                      <Timer className="mr-2 h-6 w-6 animate-pulse" />
+                      Next Dose Pending
+                    </>
+                  )}
+                </Button>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );

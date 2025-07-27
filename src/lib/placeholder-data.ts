@@ -1,3 +1,4 @@
+
 import type { Recipe, Exercise, Medication, BloodPressureLog, BloodSugarLog, MoodLog } from './types';
 
 export const placeholderRecipes: Recipe[] = [
@@ -89,9 +90,9 @@ export const placeholderExercises: Exercise[] = [
 ];
 
 export const placeholderMedications: Medication[] = [
-    { id: 'med1', name: 'Metformin', dosage: '500mg', frequency: 'Twice a day', time: ['08:00', '20:00']},
-    { id: 'med2', name: 'Lisinopril', dosage: '10mg', frequency: 'Once a day', time: ['08:00']},
-    { id: 'med3', name: 'Atorvastatin', dosage: '20mg', frequency: 'Once a day', time: ['20:00']},
+    { id: 'med1', name: 'Metformin', dosage: '500mg', frequency: 'Twice a day', time: ['08:00', '20:00'], intervalHours: 12 },
+    { id: 'med2', name: 'Lisinopril', dosage: '10mg', frequency: 'Once a day', time: ['08:00'], intervalHours: 24 },
+    { id: 'med3', name: 'Atorvastatin', dosage: '20mg', frequency: 'Once a day', time: ['20:00'], intervalHours: 24 },
 ];
 
 
