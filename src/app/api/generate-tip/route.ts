@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import { generateTip } from '@/ai/flows/generate-tip-flow';
 import {NextResponse} from 'next/server';
 
