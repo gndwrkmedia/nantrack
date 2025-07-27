@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -10,7 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Clock, PlusCircle, Lightbulb } from 'lucide-react';
+import { PlusCircle } from 'lucide-react';
 import { placeholderExercises } from '@/lib/placeholder-data';
 import type { ActivityLog } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
@@ -18,8 +18,6 @@ import { useToast } from '@/hooks/use-toast';
 export default function FitnessPage() {
     const { toast } = useToast();
     const [activityLog, setActivityLog] = React.useState<ActivityLog[]>([]);
-    const [healthTip, setHealthTip] = useState<string>('');
-    const [tipLoading, setTipLoading] = useState(true);
 
     const handleLogActivity = (exerciseName: string) => {
         // This is a simplified log entry. In a real app, a form in the dialog would provide the values.
@@ -37,40 +35,6 @@ export default function FitnessPage() {
           description: `Great job completing your ${exerciseName} workout!`,
         });
     }
-
-    useEffect(() => {
-        const fetchTip = async () => {
-          setTipLoading(true);
-          try {
-             const response = await fetch('/api/generate-tip', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                flow: 'generateLifestyleTip',
-                input: {
-                  tipType: 'fitness',
-                  fitnessData: {
-                    activityLog: activityLog.map(log => ({...log, timestamp: log.timestamp.toISOString()}))
-                  }
-                }
-              })
-            });
-            if (!response.ok) {
-              throw new Error(`API call failed with status: ${response.status}`);
-            }
-            const result = await response.json();
-            if (result.tip) {
-              setHealthTip(result.tip);
-            }
-          } catch (error) {
-            console.error("Error generating fitness tip:", error);
-            setHealthTip("Could not load a tip right now. Keep up the great work!");
-          } finally {
-            setTipLoading(false);
-          }
-        };
-        fetchTip();
-      }, [activityLog]);
 
   return (
     <div>
@@ -164,21 +128,6 @@ export default function FitnessPage() {
                     ))}
                 </TableBody>
               </Table>
-            </CardContent>
-          </Card>
-          <Card className="bg-accent/50 border-accent">
-            <CardHeader>
-                 <CardTitle className="flex items-center gap-3 text-xl">
-                    <Lightbulb className="h-7 w-7 text-accent-foreground" />
-                    <span>Wellness Tip</span>
-                </CardTitle>
-            </CardHeader>
-            <CardContent>
-                {tipLoading ? (
-                  <p className="text-lg text-accent-foreground/90 animate-pulse">Generating encouragement...</p>
-                ) : (
-                  <p className="text-lg text-accent-foreground/90">{healthTip}</p>
-                )}
             </CardContent>
           </Card>
         </div>

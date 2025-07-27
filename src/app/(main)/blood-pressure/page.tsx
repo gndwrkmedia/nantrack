@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -16,7 +16,6 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from '
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { placeholderBpLog, bpDataForChart } from '@/lib/placeholder-data';
 import { useToast } from '@/hooks/use-toast';
-import { Lightbulb } from 'lucide-react';
 
 const bpFormSchema = z.object({
   systolic: z.coerce.number().min(50, "Value must be at least 50").max(300, "Value must be less than 300"),
@@ -39,8 +38,6 @@ const chartConfig = {
 
 export default function BloodPressurePage() {
   const { toast } = useToast();
-  const [healthTip, setHealthTip] = useState<string>('');
-  const [tipLoading, setTipLoading] = useState(true);
 
   const form = useForm<BpFormValues>({
     resolver: zodResolver(bpFormSchema),
@@ -50,53 +47,6 @@ export default function BloodPressurePage() {
         notes: '',
     }
   });
-
-  useEffect(() => {
-    const fetchTip = async () => {
-      setTipLoading(true);
-      try {
-        const latestReading = placeholderBpLog[0];
-        const historicalData = placeholderBpLog.map(d => ({
-            systolic: d.systolic, 
-            diastolic: d.diastolic, 
-            timestamp: d.timestamp.toISOString()
-        }));
-        
-        const response = await fetch('/api/generate-tip', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            flow: 'generateHealthTip',
-            input: {
-              readingType: 'bloodPressure',
-              currentReading: { 
-                  systolic: latestReading.systolic, 
-                  diastolic: latestReading.diastolic, 
-                  timestamp: latestReading.timestamp.toISOString() 
-              },
-              historicalData: historicalData,
-            }
-          })
-        });
-
-        if (!response.ok) {
-            throw new Error(`API call failed with status: ${response.status}`);
-        }
-
-        const result = await response.json();
-
-        if (result.tip) {
-          setHealthTip(result.tip);
-        }
-      } catch (error) {
-        console.error("Error generating health tip:", error);
-        setHealthTip("Could not load a tip right now. Please try again later.");
-      } finally {
-        setTipLoading(false);
-      }
-    };
-    fetchTip();
-  }, []);
 
   function onSubmit(data: BpFormValues) {
     console.log(data);
@@ -165,21 +115,6 @@ export default function BloodPressurePage() {
                   <Button type="submit" size="lg" className="w-full text-lg h-12">Save Reading</Button>
                 </form>
               </Form>
-            </CardContent>
-          </Card>
-          <Card className="bg-accent/50 border-accent">
-            <CardHeader>
-                 <CardTitle className="flex items-center gap-3 text-xl">
-                    <Lightbulb className="h-7 w-7 text-accent-foreground" />
-                    <span>Personalized Tip</span>
-                </CardTitle>
-            </CardHeader>
-            <CardContent>
-                {tipLoading ? (
-                  <p className="text-lg text-accent-foreground/90 animate-pulse">Generating advice...</p>
-                ) : (
-                  <p className="text-lg text-accent-foreground/90">{healthTip}</p>
-                )}
             </CardContent>
           </Card>
         </div>

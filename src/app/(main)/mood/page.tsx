@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -12,7 +12,6 @@ import { placeholderMoodLog } from '@/lib/placeholder-data';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import type { MoodLog } from '@/lib/types';
-import { Lightbulb } from 'lucide-react';
 
 const moodOptions = [
   { level: 1, emoji: '😞', label: 'Very Sad' },
@@ -27,8 +26,6 @@ export default function MoodPage() {
   const [moodLog, setMoodLog] = useState<MoodLog[]>(placeholderMoodLog);
   const [selectedMood, setSelectedMood] = React.useState<number | null>(4);
   const [journalEntry, setJournalEntry] = React.useState('');
-  const [healthTip, setHealthTip] = useState<string>('');
-  const [tipLoading, setTipLoading] = useState(true);
 
   const handleSave = () => {
     if (!selectedMood) {
@@ -53,40 +50,6 @@ export default function MoodPage() {
     setSelectedMood(4);
     setJournalEntry('');
   };
-
-  useEffect(() => {
-    const fetchTip = async () => {
-      setTipLoading(true);
-      try {
-        const response = await fetch('/api/generate-tip', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            flow: 'generateLifestyleTip',
-            input: {
-              tipType: 'mood',
-              moodData: { 
-                moodLog: moodLog.map(log => ({...log, journalEntry: log.journalEntry || "", timestamp: log.timestamp.toISOString()}))
-              },
-            }
-          })
-        });
-        if (!response.ok) {
-          throw new Error(`API call failed with status: ${response.status}`);
-        }
-        const result = await response.json();
-        if (result.tip) {
-          setHealthTip(result.tip);
-        }
-      } catch (error) {
-        console.error("Error generating mood tip:", error);
-        setHealthTip("Could not load a tip right now. Remember to be kind to yourself today!");
-      } finally {
-        setTipLoading(false);
-      }
-    };
-    fetchTip();
-  }, [moodLog]);
 
   return (
     <div>
@@ -131,21 +94,6 @@ export default function MoodPage() {
                 onChange={(e) => setJournalEntry(e.target.value)}
               />
               <Button size="lg" className="w-full text-lg h-12" onClick={handleSave}>Save Entry</Button>
-            </CardContent>
-          </Card>
-           <Card className="bg-accent/50 border-accent">
-            <CardHeader>
-                 <CardTitle className="flex items-center gap-3 text-xl">
-                    <Lightbulb className="h-7 w-7 text-accent-foreground" />
-                    <span>Friendly Reminder</span>
-                </CardTitle>
-            </CardHeader>
-            <CardContent>
-                {tipLoading ? (
-                  <p className="text-lg text-accent-foreground/90 animate-pulse">Thinking of something helpful...</p>
-                ) : (
-                  <p className="text-lg text-accent-foreground/90">{healthTip}</p>
-                )}
             </CardContent>
           </Card>
         </div>

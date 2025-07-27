@@ -12,9 +12,8 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/page-header';
-import { HeartPulse, Droplets, Pill, Smile, Lightbulb, Bike, UtensilsCrossed } from 'lucide-react';
-import { placeholderBpLog, placeholderBsLog, placeholderMoodLog, bpDataForChart, bsDataForChart } from '@/lib/placeholder-data';
-import type { ActivityLog } from '@/lib/types';
+import { HeartPulse, Droplets, Pill, Smile, Bike, UtensilsCrossed } from 'lucide-react';
+import { bpDataForChart, bsDataForChart } from '@/lib/placeholder-data';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartConfig } from '@/components/ui/chart';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
@@ -47,8 +46,6 @@ const bsChartConfig = {
 } satisfies ChartConfig;
 
 export default function DashboardPage() {
-  const [dailyTip, setDailyTip] = useState('');
-  const [tipLoading, setTipLoading] = useState(true);
   const [greeting, setGreeting] = useState('');
 
   useEffect(() => {
@@ -59,74 +56,6 @@ export default function DashboardPage() {
         return "Good Evening";
     };
     setGreeting(getGreeting());
-  }, []);
-
-  useEffect(() => {
-    const fetchTip = async () => {
-      setTipLoading(true);
-      try {
-        const bpData = placeholderBpLog.map(d => ({
-            systolic: d.systolic, 
-            diastolic: d.diastolic, 
-            timestamp: d.timestamp.toISOString()
-        }));
-
-        const bsData = placeholderBsLog.map(d => ({
-            level: d.level, 
-            timestamp: d.timestamp.toISOString()
-        }));
-        
-        const moodData = placeholderMoodLog.map(log => ({...log, journalEntry: log.journalEntry || '', timestamp: log.timestamp.toISOString()}));
-
-        const activityLog: ActivityLog[] = []; 
-        const waterCount = 3;
-
-        const response = await fetch('/api/generate-tip', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            flow: 'generateDailySummaryTip',
-            input: {
-              bloodPressure: {
-                currentReading: bpData[0],
-                historicalData: bpData,
-              },
-              bloodSugar: {
-                currentReading: bsData[0],
-                historicalData: bsData,
-              },
-              fitness: {
-                activityLog: activityLog.map(log => ({...log, timestamp: log.timestamp.toISOString()}))
-              },
-              nutrition: {
-                waterCount: waterCount,
-              },
-              mood: {
-                moodLog: moodData,
-              }
-            }
-          })
-        });
-
-        if (!response.ok) {
-            throw new Error(`API call failed with status: ${response.status}`);
-        }
-
-        const result = await response.json();
-        
-        if (result.tip) {
-          setDailyTip(result.tip);
-        }
-      } catch (error) {
-        console.error("Error generating daily tip:", error);
-        setDailyTip("Have a wonderful day! Remember to stay hydrated and take your medications as scheduled.");
-      } finally {
-        setTipLoading(false);
-      }
-    };
-    fetchTip();
   }, []);
   
   return (
@@ -148,22 +77,6 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card className="flex flex-col md:col-span-2 lg:col-span-3 bg-accent/50 border-accent">
-            <CardHeader>
-                 <CardTitle className="flex items-center gap-3 text-2xl">
-                    <Lightbulb className="h-8 w-8 text-accent-foreground" />
-                    <span>Tip of the Day</span>
-                </CardTitle>
-            </CardHeader>
-            <CardContent>
-                {tipLoading ? (
-                  <p className="text-xl text-accent-foreground/90 animate-pulse">Generating your daily tip...</p>
-                ) : (
-                  <p className="text-xl text-accent-foreground/90">{dailyTip}</p>
-                )}
-            </CardContent>
-        </Card>
-
         <Card className="lg:col-span-2">
             <CardHeader>
               <CardTitle className="flex items-center gap-3 text-2xl">

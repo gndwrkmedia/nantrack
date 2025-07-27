@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -9,14 +9,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { placeholderRecipes } from '@/lib/placeholder-data';
 import type { Recipe } from '@/lib/types';
-import { Minus, Plus, GlassWater, Lightbulb } from 'lucide-react';
+import { Minus, Plus, GlassWater } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function NutritionPage() {
   const { toast } = useToast();
   const [waterCount, setWaterCount] = React.useState(3);
-  const [healthTip, setHealthTip] = useState<string>('');
-  const [tipLoading, setTipLoading] = useState(true);
 
   const handleLogMeal = (mealName: string) => {
     toast({
@@ -24,40 +22,6 @@ export default function NutritionPage() {
       description: `You've logged "${mealName}". Enjoy!`,
     });
   }
-
-  useEffect(() => {
-    const fetchTip = async () => {
-      setTipLoading(true);
-      try {
-        const response = await fetch('/api/generate-tip', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            flow: 'generateLifestyleTip',
-            input: {
-              tipType: 'nutrition',
-              nutritionData: { waterCount },
-            }
-          })
-        });
-
-        if (!response.ok) {
-          throw new Error(`API call failed with status: ${response.status}`);
-        }
-        
-        const result = await response.json();
-        if (result.tip) {
-          setHealthTip(result.tip);
-        }
-      } catch (error) {
-        console.error("Error generating nutrition tip:", error);
-        setHealthTip("Could not load a tip right now. Remember to eat your veggies!");
-      } finally {
-        setTipLoading(false);
-      }
-    };
-    fetchTip();
-  }, [waterCount]);
 
   const renderRecipeCard = (recipe: Recipe) => (
     <Dialog key={recipe.id}>
@@ -123,8 +87,8 @@ export default function NutritionPage() {
         description="Discover diabetes-friendly recipes and track your hydration."
       />
 
-        <div className="grid gap-6 lg:grid-cols-5 mb-6">
-            <Card className="lg:col-span-3">
+        <div className="grid gap-6 mb-6">
+            <Card>
                 <CardHeader>
                     <CardTitle className="flex items-center gap-3 text-2xl">
                         <GlassWater className="h-8 w-8 text-primary"/>
@@ -142,21 +106,6 @@ export default function NutritionPage() {
                     </Button>
                 </CardContent>
             </Card>
-            <Card className="lg:col-span-2 bg-accent/50 border-accent">
-                <CardHeader>
-                     <CardTitle className="flex items-center gap-3 text-xl">
-                        <Lightbulb className="h-7 w-7 text-accent-foreground" />
-                        <span>Nutrition Tip</span>
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    {tipLoading ? (
-                      <p className="text-lg text-accent-foreground/90 animate-pulse">Generating a tasty tip...</p>
-                    ) : (
-                      <p className="text-lg text-accent-foreground/90">{healthTip}</p>
-                    )}
-                </CardContent>
-          </Card>
         </div>
 
 
